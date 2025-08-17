@@ -11,7 +11,7 @@ function App(){
         <div className="flex flex-col justify-center items-center h-screen w-full">
             <h1 className="text-2xl font-bold">Caption Formatter</h1>
             <Textarea placeholder="Enter caption with formatting: *bold*, _italic_, ~strikethrough~" className="w-1/2 mt-5 mb-3 max-h-1/2 text-wrap wrap-break-word" value={caption} onChange={(e) => setCaption(e.target.value)} />
-            <div className="flex flex-row gap-4 mt-4 min-w-1/2 max-w-10/12 mx-20">
+            <div className="flex flex-row gap-4 mt-4 min-w-1/2 max-w-10/12 mx-20  max-h-1/2 ">
                 <OutputCard platform="Whatsapp" caption={caption} />
                 <OutputCard platform="Telegram" caption={ConvertToTelegram(caption)} />
                 <OutputCard platform="Youtube" caption={ConvertToYoutube(caption)} />
@@ -28,7 +28,7 @@ function OutputCard({platform, caption}:{platform:string, caption:string}){
             <CardTitle className="mx-4">
                 {platform}
             </CardTitle>
-            <CardContent className="mx-4">
+            <CardContent className="mx-4 overflow-y-auto">
                 <div style={{ whiteSpace: "pre-wrap" }}>
                     {caption}
                 </div>
