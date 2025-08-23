@@ -22,7 +22,14 @@ function App(){
 }
 
 function OutputCard({platform, caption}:{platform:string, caption:string}){
-    const copy = () => navigator.clipboard.writeText(caption);
+    const [copied, setCopied] = useState(false);
+
+    const copy = () => {
+        navigator.clipboard.writeText(caption);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1200);
+    };
+
     return(
         <Card className="w-full wrap-anywhere ">
             <CardTitle className="mx-4">
@@ -33,8 +40,13 @@ function OutputCard({platform, caption}:{platform:string, caption:string}){
                     {caption}
                 </div>
             </CardContent>
-            <CardFooter className="mx-4">
-                <Button onClick={copy} className="min-w-full" ><Copy /> Copy</Button>
+            <CardFooter className="mx-4 flex flex-col items-center">
+                <Button variant="outline" onClick={copy} className="min-w-full hover:bg-gray-100 flex items-center gap-2" >
+                    <Copy /> Copy
+                </Button>
+                {copied && (
+                    <span className="text-green-600 text-xs mt-2 animate-bounce">Copied!</span>
+                )}
             </CardFooter>
         </Card>
     )
