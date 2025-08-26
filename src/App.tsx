@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import {useEffect, useRef, useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import OutputCard from "@/components/Utils/OutputCard";
 import { YoutubeFormatter, TelegramFormatter } from "./components/Utils/CaptionFormatters";
