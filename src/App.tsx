@@ -1,69 +1,78 @@
-import { useState } from "react";
-import {Button} from "@/components/ui/button";
-import {Card,CardTitle,CardContent,CardFooter} from "@/components/ui/card";
-import {Textarea} from "@/components/ui/textarea";
-import { Copy } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Textarea } from "@/components/ui/textarea";
+import OutputCard from "@/components/Utils/OutputCard";
+import { YoutubeFormatter, TelegramFormatter } from "./components/Utils/CaptionFormatters";
+import { useLocalStorage } from "@/components/Utils/LocalStorage";
 
-function App(){
-    const [caption, setCaption] = useState("");
-
-    return(
-        <div className="flex flex-col justify-center items-center h-screen w-full">
-            <h1 className="text-2xl font-bold">Caption Formatter</h1>
-            <Textarea placeholder="Enter caption with formatting: *bold*, _italic_, ~strikethrough~" className="w-1/2 mt-5 mb-3 max-h-1/2 text-wrap wrap-break-word" value={caption} onChange={(e) => setCaption(e.target.value)} />
-            <div className="flex flex-row gap-4 mt-4 min-w-1/2 max-w-10/12 mx-20  max-h-1/2 ">
-                <OutputCard platform="Whatsapp" caption={caption} />
-                <OutputCard platform="Telegram" caption={ConvertToTelegram(caption)} />
-                <OutputCard platform="Youtube" caption={ConvertToYoutube(caption)} />
-
-            </div>
-        </div>
-    )
+// Move debounce outside component to avoid recreation on every render
+function debounce<T extends (...args: any[]) => void>(func: T, delay: number) {
+    let timer: NodeJS.Timeout;
+    return (...args: Parameters<T>) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => func(...args), delay);
+    };
 }
 
-function OutputCard({platform, caption}:{platform:string, caption:string}){
-    const [copied, setCopied] = useState(false);
+function App() {
+    const { value: storedCaption, setStoredValue: setCaption } = useLocalStorage("caption", "");
+    const { value: storedFooter, setStoredValue: setFooter } = useLocalStorage("footer", "");
 
-    const copy = () => {
-        navigator.clipboard.writeText(caption);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 1200);
+    // Use local state for immediate UI updates
+    const [caption, setCaptionState] = useState(storedCaption);
+    const [footer, setFooterState] = useState(storedFooter);
+
+    // Debounce only the saving to local storage
+    const debouncedSetCaption = useRef(
+        debounce((value: string) => setCaption(value), 1000)
+    ).current;
+    const debouncedSetFooter = useRef(
+        debounce((value: string) => setFooter(value), 1000)
+    ).current;
+
+    // Sync local state to local storage with debounce
+    useEffect(() => {
+        debouncedSetCaption(caption?.toString());
+    }, [caption, debouncedSetCaption]);
+
+    useEffect(() => {
+        debouncedSetFooter(footer?.toString());
+    }, [footer, debouncedSetFooter]);
+
+    // Update local state immediately on change
+    const handleCaptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setCaptionState(e.target.value);
     };
 
-    return(
-        <Card className="w-full wrap-anywhere ">
-            <CardTitle className="mx-4">
-                {platform}
-            </CardTitle>
-            <CardContent className="mx-4 overflow-y-auto">
-                <div style={{ whiteSpace: "pre-wrap" }}>
-                    {caption}
-                </div>
-            </CardContent>
-            <CardFooter className="mx-4 flex flex-col items-center">
-                <Button variant="outline" onClick={copy} className="min-w-full hover:bg-gray-100 flex items-center gap-2" >
-                    <Copy /> Copy
-                </Button>
-                {copied && (
-                    <span className="text-green-600 text-xs mt-2 animate-bounce">Copied!</span>
-                )}
-            </CardFooter>
-        </Card>
-    )
-}
+    const handleFooterChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setFooterState(e.target.value);
+    };
 
-function ConvertToTelegram(input:String){
-    let caption = input.replace(/\*([^\s].*?[^\s])\*/g, "**$1**");
-    caption = caption.replace(/_([^\s].*?[^\s])_/g, "__$1__");
-    caption = caption.replace(/~([^\s].*?[^\s])~/g, "~$1~");
-    return caption;
-}
-
-function ConvertToYoutube(input:String){
-    let caption = input.replace(/\*([^\s].*?[^\s])\*/g, "$1");
-    caption = caption.replace(/_([^\s].*?[^\s])_/g, "$1");
-    caption = caption.replace(/~([^\s].*?[^\s])~/g, "$1");
-    return caption;
+    return (
+        <div className="flex flex-col justify-center items-center h-screen w-full">
+            <h1 className="text-2xl font-bold">Caption Formatter</h1>
+            <div className="w-1/2 mt-5 mb-3 max-h-1/2">
+                <h3>Caption</h3>
+                <Textarea
+                    placeholder="Enter caption with formatting: *bold*, _italic_, ~strikethrough~"
+                    className="text-wrap break-words"
+                    value={caption?.toString()}
+                    onChange={handleCaptionChange}
+                />
+                <h3 className="mt-2">Footer</h3>
+                <Textarea
+                    placeholder="Enter the footer of the caption"
+                    className="text-wrap break-words mt-2"
+                    value={footer?.toString()}
+                    onChange={handleFooterChange}
+                />
+            </div>
+            <div className="flex flex-row gap-4 mt-4 min-w-1/2 max-w-10/12 mx-20 max-h-1/2">
+                <OutputCard platform="Whatsapp" caption={caption ? caption.toString() : ''} footer={footer ? footer.toString() : ''} />
+                <OutputCard platform="Telegram" caption={caption ? TelegramFormatter(caption) : ''} footer={footer ? TelegramFormatter(footer) : ''} />
+                <OutputCard platform="Youtube" caption={caption ? YoutubeFormatter(caption) : ''} footer={footer ? YoutubeFormatter(footer) : ''} />
+            </div>
+        </div>
+    );
 }
 
 export default App;
