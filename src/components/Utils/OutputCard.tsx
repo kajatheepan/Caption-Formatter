@@ -6,10 +6,16 @@ import {useState} from "react";
 export default function OutputCard({ platform, caption, footer }: { platform: string, caption: string, footer: string }) {
 const [copied, setCopied] = useState(false);
 
-const copy = (text: string) => {
-navigator.clipboard.writeText(text);
-setCopied(true);
-setTimeout(() => setCopied(false), 1200);
+const copy = async (text: string) => {
+  try {
+    await navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1200);
+  } catch (err) {
+    // Optionally, you could show an error message here
+    // For now, we simply do not show "Copied!" if it fails
+    // console.error("Failed to copy text: ", err);
+  }
 };
 
 return (
