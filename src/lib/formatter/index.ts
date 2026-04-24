@@ -4,7 +4,7 @@ import type { Platform } from "@/types/platform";
 import type { FormattedOutput } from "./types";
 import { InstagramFormatter } from "./instagramFormatter";
 import { LinkedinFormatter } from "./linkedinFormatter";
-import { TelegramFormatter } from "./telegramFormatter";
+import { formatTelegramCaption, TelegramFormatter } from "./telegramFormatter";
 import { TwitterFormatter } from "./twitterFormatter";
 import { formatWhatsappCaption, WhatsappFormatter } from "./whatsappFormatter";
 import { YoutubeFormatter } from "./youtubeFormatter";
@@ -45,6 +45,10 @@ function joinCaptionParts(caption: string, footer: string) {
 function getRawTextForPlatform(platform: Platform, document: CaptionDocument) {
     if (platform === "whatsapp") {
         return formatWhatsappCaption(document);
+    }
+
+    if (platform === "telegram") {
+        return formatTelegramCaption(document);
     }
 
     return joinCaptionParts(document.caption, document.footer);
