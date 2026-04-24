@@ -1,4 +1,4 @@
-export const APP_NAME = "Caption Formatter";
+export const APP_NAME = "CaptionForge";
 
 export const PLATFORM_CONFIG = {
     whatsapp: {
