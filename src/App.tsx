@@ -48,25 +48,25 @@ function App() {
     };
 
     return (
-        <div className="flex flex-col justify-center items-center h-screen w-full">
+        <div className="flex min-h-screen w-full flex-col items-center px-4 py-8">
             <h1 className="text-2xl font-bold">Caption Formatter</h1>
-            <div className="w-1/2 mt-5 mb-3 max-h-1/2">
+            <div className="mt-5 mb-3 w-full max-w-3xl">
                 <h3>Caption</h3>
                 <Textarea
                     placeholder="Enter caption with formatting: *bold*, _italic_, ~strikethrough~"
-                    className="text-wrap break-words"
+                    className="min-h-32 text-wrap break-words"
                     value={caption?.toString()}
                     onChange={handleCaptionChange}
                 />
                 <h3 className="mt-2">Footer</h3>
                 <Textarea
                     placeholder="Enter the footer of the caption"
-                    className="text-wrap break-words mt-2"
+                    className="mt-2 min-h-24 text-wrap break-words"
                     value={footer?.toString()}
                     onChange={handleFooterChange}
                 />
             </div>
-            <div className="flex flex-row gap-4 mt-4 min-w-1/2 max-w-10/12 mx-20 max-h-1/2">
+            <div className="mt-4 grid w-full max-w-6xl grid-cols-1 gap-4 md:grid-cols-3">
                 <OutputCard platform="Whatsapp" caption={caption ? caption.toString() : ''} footer={footer ? footer.toString() : ''} />
                 <OutputCard platform="Telegram" caption={caption ? TelegramFormatter(caption) : ''} footer={footer ? TelegramFormatter(footer) : ''} />
                 <OutputCard platform="Youtube" caption={caption ? YoutubeFormatter(caption) : ''} footer={footer ? YoutubeFormatter(footer) : ''} />
