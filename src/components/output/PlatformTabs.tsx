@@ -1,15 +1,8 @@
 import PlatformPreviewCard from "./PlatformPreviewCard";
-import type { Platform } from "@/types/platform";
-
-type PlatformOutput = {
-    platform: Platform;
-    label: string;
-    caption: string;
-    footer: string;
-};
+import type { FormattedOutput } from "@/lib/formatter/types";
 
 type PlatformTabsProps = {
-    outputs: PlatformOutput[];
+    outputs: FormattedOutput[];
 };
 
 function PlatformTabs({ outputs }: PlatformTabsProps) {
@@ -19,8 +12,7 @@ function PlatformTabs({ outputs }: PlatformTabsProps) {
                 <PlatformPreviewCard
                     key={output.platform}
                     label={output.label}
-                    caption={output.caption}
-                    footer={output.footer}
+                    text={output.text}
                 />
             ))}
         </div>

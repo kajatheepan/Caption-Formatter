@@ -3,10 +3,9 @@ import AppLayout from "@/components/layout/AppLayout";
 import FooterInput from "@/components/inputs/FooterInput";
 import CaptionEditor from "@/components/editor/CaptionEditor";
 import PlatformTabs from "@/components/output/PlatformTabs";
-import { TelegramFormatter, YoutubeFormatter } from "@/lib/formatter";
+import { formatForPlatform } from "@/lib/formatter";
 import { useLocalStorage } from "@/hooks/useLocalDraft";
 import useCaptionDocument from "@/hooks/useCaptionDocument";
-import { PLATFORM_CONFIG } from "@/lib/constants";
 
 function debounce<T extends (...args: string[]) => void>(func: T, delay: number) {
     let timer: NodeJS.Timeout;
@@ -50,24 +49,9 @@ function HomePage() {
 
             <PlatformTabs
                 outputs={[
-                    {
-                        platform: "whatsapp",
-                        label: PLATFORM_CONFIG.whatsapp.label,
-                        caption: document.caption,
-                        footer: document.footer,
-                    },
-                    {
-                        platform: "telegram",
-                        label: PLATFORM_CONFIG.telegram.label,
-                        caption: document.caption ? TelegramFormatter(document.caption) : "",
-                        footer: document.footer ? TelegramFormatter(document.footer) : "",
-                    },
-                    {
-                        platform: "youtube",
-                        label: PLATFORM_CONFIG.youtube.label,
-                        caption: document.caption ? YoutubeFormatter(document.caption) : "",
-                        footer: document.footer ? YoutubeFormatter(document.footer) : "",
-                    },
+                    formatForPlatform("whatsapp", document),
+                    formatForPlatform("telegram", document),
+                    formatForPlatform("youtube", document),
                 ]}
             />
         </AppLayout>

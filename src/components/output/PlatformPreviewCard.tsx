@@ -3,23 +3,18 @@ import CopyButton from "./CopyButton";
 
 type PlatformPreviewCardProps = {
     label: string;
-    caption: string;
-    footer: string;
+    text: string;
 };
 
-function PlatformPreviewCard({ label, caption, footer }: PlatformPreviewCardProps) {
+function PlatformPreviewCard({ label, text }: PlatformPreviewCardProps) {
     return (
         <Card className="w-full wrap-anywhere">
             <CardTitle className="mx-4">{label}</CardTitle>
             <CardContent className="mx-4 overflow-y-auto">
-                <div style={{ whiteSpace: "pre-wrap" }}>
-                    {caption}
-                    <br />
-                    {footer}
-                </div>
+                <div style={{ whiteSpace: "pre-wrap" }}>{text}</div>
             </CardContent>
             <CardFooter className="mx-4 flex flex-col items-center">
-                <CopyButton text={`${caption}\n\n${footer}`} />
+                <CopyButton text={text} />
             </CardFooter>
         </Card>
     );
