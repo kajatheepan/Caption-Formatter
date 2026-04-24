@@ -7,7 +7,7 @@ import { LinkedinFormatter } from "./linkedinFormatter";
 import { formatTelegramCaption, TelegramFormatter } from "./telegramFormatter";
 import { TwitterFormatter } from "./twitterFormatter";
 import { formatWhatsappCaption, WhatsappFormatter } from "./whatsappFormatter";
-import { YoutubeFormatter } from "./youtubeFormatter";
+import { formatYoutubeCaption, YoutubeFormatter } from "./youtubeFormatter";
 
 export { TelegramFormatter } from "./telegramFormatter";
 export { YoutubeFormatter } from "./youtubeFormatter";
@@ -49,6 +49,10 @@ function getRawTextForPlatform(platform: Platform, document: CaptionDocument) {
 
     if (platform === "telegram") {
         return formatTelegramCaption(document);
+    }
+
+    if (platform === "youtube") {
+        return formatYoutubeCaption(document);
     }
 
     return joinCaptionParts(document.caption, document.footer);
