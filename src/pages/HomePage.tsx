@@ -5,6 +5,24 @@ import CaptionEditor from "@/components/editor/CaptionEditor";
 import PlatformTabs from "@/components/output/PlatformTabs";
 import { TelegramFormatter, YoutubeFormatter } from "@/lib/formatter";
 import { useLocalStorage } from "@/hooks/useLocalDraft";
+import type { CaptionDocument } from "@/types/caption";
+
+function createCaptionDocument(caption: string, footer: string): CaptionDocument {
+    return {
+        id: null,
+        title: "Untitled caption",
+        caption,
+        footer,
+        hashtags: [],
+        customPlatformText: {},
+        settings: {
+            includeFooter: true,
+            attachHashtags: false,
+            optimizeForPlatform: true,
+            previewMode: true,
+        },
+    };
+}
 
 function debounce<T extends (...args: string[]) => void>(func: T, delay: number) {
     let timer: NodeJS.Timeout;
@@ -19,8 +37,9 @@ function HomePage() {
     const { value: storedCaption, setStoredValue: setCaption } = useLocalStorage("caption", "");
     const { value: storedFooter, setStoredValue: setFooter } = useLocalStorage("footer", "");
 
-    const [caption, setCaptionState] = useState(storedCaption);
-    const [footer, setFooterState] = useState(storedFooter);
+    const [document, setDocument] = useState<CaptionDocument>(() =>
+        createCaptionDocument(storedCaption, storedFooter)
+    );
 
     const debouncedSetCaption = useRef(
         debounce((value: string) => setCaption(value), 1000)
@@ -30,36 +49,53 @@ function HomePage() {
     ).current;
 
     useEffect(() => {
-        debouncedSetCaption(caption.toString());
-    }, [caption, debouncedSetCaption]);
+        debouncedSetCaption(document.caption);
+    }, [document.caption, debouncedSetCaption]);
 
     useEffect(() => {
-        debouncedSetFooter(footer.toString());
-    }, [footer, debouncedSetFooter]);
+        debouncedSetFooter(document.footer);
+    }, [document.footer, debouncedSetFooter]);
+
+    const setCaptionState = (caption: string) => {
+        setDocument((currentDocument) => ({
+            ...currentDocument,
+            caption,
+        }));
+    };
+
+    const setFooterState = (footer: string) => {
+        setDocument((currentDocument) => ({
+            ...currentDocument,
+            footer,
+        }));
+    };
 
     return (
         <AppLayout>
             <div className="mt-5 mb-3 w-full max-w-3xl">
-                <CaptionEditor value={caption.toString()} onChange={setCaptionState} />
-                <FooterInput value={footer.toString()} onChange={setFooterState} />
+                <CaptionEditor value={document.caption} onChange={setCaptionState} />
+                <FooterInput value={document.footer} onChange={setFooterState} />
             </div>
 
             <PlatformTabs
                 outputs={[
                     {
-                        platform: "Whatsapp",
-                        caption: caption.toString(),
-                        footer: footer.toString(),
+                        platform: "whatsapp",
+                        label: "Whatsapp",
+                        caption: document.caption,
+                        footer: document.footer,
                     },
                     {
-                        platform: "Telegram",
-                        caption: caption ? TelegramFormatter(caption) : "",
-                        footer: footer ? TelegramFormatter(footer) : "",
+                        platform: "telegram",
+                        label: "Telegram",
+                        caption: document.caption ? TelegramFormatter(document.caption) : "",
+                        footer: document.footer ? TelegramFormatter(document.footer) : "",
                     },
                     {
-                        platform: "Youtube",
-                        caption: caption ? YoutubeFormatter(caption) : "",
-                        footer: footer ? YoutubeFormatter(footer) : "",
+                        platform: "youtube",
+                        label: "Youtube",
+                        caption: document.caption ? YoutubeFormatter(document.caption) : "",
+                        footer: document.footer ? YoutubeFormatter(document.footer) : "",
                     },
                 ]}
             />

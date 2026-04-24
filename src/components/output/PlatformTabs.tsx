@@ -1,7 +1,9 @@
 import PlatformPreviewCard from "./PlatformPreviewCard";
+import type { Platform } from "@/types/platform";
 
 type PlatformOutput = {
-    platform: string;
+    platform: Platform;
+    label: string;
     caption: string;
     footer: string;
 };
@@ -16,7 +18,7 @@ function PlatformTabs({ outputs }: PlatformTabsProps) {
             {outputs.map((output) => (
                 <PlatformPreviewCard
                     key={output.platform}
-                    platform={output.platform}
+                    label={output.label}
                     caption={output.caption}
                     footer={output.footer}
                 />
