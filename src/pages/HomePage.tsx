@@ -6,6 +6,7 @@ import PlatformTabs from "@/components/output/PlatformTabs";
 import { TelegramFormatter, YoutubeFormatter } from "@/lib/formatter";
 import { useLocalStorage } from "@/hooks/useLocalDraft";
 import useCaptionDocument from "@/hooks/useCaptionDocument";
+import { PLATFORM_CONFIG } from "@/lib/constants";
 
 function debounce<T extends (...args: string[]) => void>(func: T, delay: number) {
     let timer: NodeJS.Timeout;
@@ -51,19 +52,19 @@ function HomePage() {
                 outputs={[
                     {
                         platform: "whatsapp",
-                        label: "Whatsapp",
+                        label: PLATFORM_CONFIG.whatsapp.label,
                         caption: document.caption,
                         footer: document.footer,
                     },
                     {
                         platform: "telegram",
-                        label: "Telegram",
+                        label: PLATFORM_CONFIG.telegram.label,
                         caption: document.caption ? TelegramFormatter(document.caption) : "",
                         footer: document.footer ? TelegramFormatter(document.footer) : "",
                     },
                     {
                         platform: "youtube",
-                        label: "Youtube",
+                        label: PLATFORM_CONFIG.youtube.label,
                         caption: document.caption ? YoutubeFormatter(document.caption) : "",
                         footer: document.footer ? YoutubeFormatter(document.footer) : "",
                     },
