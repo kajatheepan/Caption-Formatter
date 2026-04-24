@@ -13,6 +13,9 @@ function PlatformTabs({ outputs }: PlatformTabsProps) {
                     key={output.platform}
                     label={output.label}
                     text={output.text}
+                    characterCount={output.characterCount}
+                    characterLimit={output.characterLimit}
+                    isOverLimit={output.isOverLimit}
                 />
             ))}
         </div>

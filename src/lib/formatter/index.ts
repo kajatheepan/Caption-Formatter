@@ -5,7 +5,7 @@ import type { FormattedOutput } from "./types";
 import { formatInstagramCaption, InstagramFormatter } from "./instagramFormatter";
 import { LinkedinFormatter } from "./linkedinFormatter";
 import { formatTelegramCaption, TelegramFormatter } from "./telegramFormatter";
-import { TwitterFormatter } from "./twitterFormatter";
+import { formatTwitterCaption, TwitterFormatter } from "./twitterFormatter";
 import { formatWhatsappCaption, WhatsappFormatter } from "./whatsappFormatter";
 import { formatYoutubeCaption, YoutubeFormatter } from "./youtubeFormatter";
 
@@ -57,6 +57,10 @@ function getRawTextForPlatform(platform: Platform, document: CaptionDocument) {
 
     if (platform === "instagram") {
         return formatInstagramCaption(document);
+    }
+
+    if (platform === "twitter") {
+        return formatTwitterCaption(document);
     }
 
     return joinCaptionParts(document.caption, document.footer);

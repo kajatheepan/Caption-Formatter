@@ -53,6 +53,7 @@ function HomePage() {
                     formatForPlatform("telegram", document),
                     formatForPlatform("youtube", document),
                     formatForPlatform("instagram", document),
+                    formatForPlatform("twitter", document),
                 ]}
             />
         </AppLayout>
