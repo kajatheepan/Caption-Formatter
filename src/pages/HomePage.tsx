@@ -1,28 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import AppLayout from "@/components/layout/AppLayout";
 import FooterInput from "@/components/inputs/FooterInput";
 import CaptionEditor from "@/components/editor/CaptionEditor";
 import PlatformTabs from "@/components/output/PlatformTabs";
 import { TelegramFormatter, YoutubeFormatter } from "@/lib/formatter";
 import { useLocalStorage } from "@/hooks/useLocalDraft";
-import type { CaptionDocument } from "@/types/caption";
-
-function createCaptionDocument(caption: string, footer: string): CaptionDocument {
-    return {
-        id: null,
-        title: "Untitled caption",
-        caption,
-        footer,
-        hashtags: [],
-        customPlatformText: {},
-        settings: {
-            includeFooter: true,
-            attachHashtags: false,
-            optimizeForPlatform: true,
-            previewMode: true,
-        },
-    };
-}
+import useCaptionDocument from "@/hooks/useCaptionDocument";
 
 function debounce<T extends (...args: string[]) => void>(func: T, delay: number) {
     let timer: NodeJS.Timeout;
@@ -37,9 +20,10 @@ function HomePage() {
     const { value: storedCaption, setStoredValue: setCaption } = useLocalStorage("caption", "");
     const { value: storedFooter, setStoredValue: setFooter } = useLocalStorage("footer", "");
 
-    const [document, setDocument] = useState<CaptionDocument>(() =>
-        createCaptionDocument(storedCaption, storedFooter)
-    );
+    const { document, setCaption: setCaptionState, setFooter: setFooterState } = useCaptionDocument({
+        caption: storedCaption,
+        footer: storedFooter,
+    });
 
     const debouncedSetCaption = useRef(
         debounce((value: string) => setCaption(value), 1000)
@@ -55,20 +39,6 @@ function HomePage() {
     useEffect(() => {
         debouncedSetFooter(document.footer);
     }, [document.footer, debouncedSetFooter]);
-
-    const setCaptionState = (caption: string) => {
-        setDocument((currentDocument) => ({
-            ...currentDocument,
-            caption,
-        }));
-    };
-
-    const setFooterState = (footer: string) => {
-        setDocument((currentDocument) => ({
-            ...currentDocument,
-            footer,
-        }));
-    };
 
     return (
         <AppLayout>
