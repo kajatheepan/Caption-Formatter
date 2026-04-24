@@ -54,6 +54,7 @@ function HomePage() {
                     formatForPlatform("youtube", document),
                     formatForPlatform("instagram", document),
                     formatForPlatform("twitter", document),
+                    formatForPlatform("linkedin", document),
                 ]}
             />
         </AppLayout>
