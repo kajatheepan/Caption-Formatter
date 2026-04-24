@@ -2,7 +2,7 @@ import { PLATFORM_CONFIG } from "@/lib/constants";
 import type { CaptionDocument } from "@/types/caption";
 import type { Platform } from "@/types/platform";
 import type { FormattedOutput } from "./types";
-import { InstagramFormatter } from "./instagramFormatter";
+import { formatInstagramCaption, InstagramFormatter } from "./instagramFormatter";
 import { LinkedinFormatter } from "./linkedinFormatter";
 import { formatTelegramCaption, TelegramFormatter } from "./telegramFormatter";
 import { TwitterFormatter } from "./twitterFormatter";
@@ -53,6 +53,10 @@ function getRawTextForPlatform(platform: Platform, document: CaptionDocument) {
 
     if (platform === "youtube") {
         return formatYoutubeCaption(document);
+    }
+
+    if (platform === "instagram") {
+        return formatInstagramCaption(document);
     }
 
     return joinCaptionParts(document.caption, document.footer);
