@@ -6,7 +6,7 @@ import { InstagramFormatter } from "./instagramFormatter";
 import { LinkedinFormatter } from "./linkedinFormatter";
 import { TelegramFormatter } from "./telegramFormatter";
 import { TwitterFormatter } from "./twitterFormatter";
-import { WhatsappFormatter } from "./whatsappFormatter";
+import { formatWhatsappCaption, WhatsappFormatter } from "./whatsappFormatter";
 import { YoutubeFormatter } from "./youtubeFormatter";
 
 export { TelegramFormatter } from "./telegramFormatter";
@@ -42,12 +42,20 @@ function joinCaptionParts(caption: string, footer: string) {
     return caption || footer;
 }
 
+function getRawTextForPlatform(platform: Platform, document: CaptionDocument) {
+    if (platform === "whatsapp") {
+        return formatWhatsappCaption(document);
+    }
+
+    return joinCaptionParts(document.caption, document.footer);
+}
+
 export function formatForPlatform(
     platform: Platform,
     document: CaptionDocument
 ): FormattedOutput {
     const config = PLATFORM_CONFIG[platform];
-    const rawText = joinCaptionParts(document.caption, document.footer);
+    const rawText = getRawTextForPlatform(platform, document);
     const text = formatters[platform](rawText);
     const characterCount = text.length;
 
