@@ -1,23 +1,22 @@
 export function cleanHashtags(input: string | string[]) {
-    const words = Array.isArray(input) ? input : input.split(/\s+/);
+    const words = Array.isArray(input) ? input.flatMap((item) => item.split(/[\s,]+/)) : input.split(/[\s,]+/);
     const seenHashtags = new Set<string>();
     const cleanedHashtags: string[] = [];
 
     for (const word of words) {
-        const trimmedWord = word.trim();
+        const trimmedWord = word.trim().replace(/^#+/, "").toLowerCase();
 
         if (!trimmedWord) {
             continue;
         }
 
-        const hashtag = trimmedWord.startsWith("#") ? trimmedWord : `#${trimmedWord}`;
-        const normalizedHashtag = hashtag.toLowerCase();
+        const hashtag = `#${trimmedWord}`;
 
-        if (seenHashtags.has(normalizedHashtag)) {
+        if (seenHashtags.has(hashtag)) {
             continue;
         }
 
-        seenHashtags.add(normalizedHashtag);
+        seenHashtags.add(hashtag);
         cleanedHashtags.push(hashtag);
     }
 
