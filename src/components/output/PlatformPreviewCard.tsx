@@ -172,13 +172,11 @@ function PlatformPreviewCard({
             </CardHeader>
 
             <CardContent className="space-y-4 p-5">
-                {isOverLimit && (
-                    <CharacterCounter
-                        count={characterCount}
-                        limit={characterLimit}
-                        isOverLimit={isOverLimit}
-                    />
-                )}
+                <CharacterCounter
+                    count={characterCount}
+                    limit={characterLimit}
+                    isOverLimit={isOverLimit}
+                />
                 <div className="rounded-xl bg-[#f7f7f8] p-4">
                     {renderPreviewShell(platform, text)}
                 </div>
