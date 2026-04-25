@@ -8,10 +8,14 @@ type FooterInputProps = {
 function FooterInput({ value, onChange }: FooterInputProps) {
     return (
         <>
-            <h3 className="text-sm font-semibold text-muted-foreground">Footer</h3>
+            <div className="border-t pt-4">
+                <h3 className="text-[13px] font-medium text-zinc-700">
+                    Footer <span className="font-normal text-muted-foreground">(optional)</span>
+                </h3>
+            </div>
             <Textarea
-                placeholder="Enter the footer of the caption"
-                className="min-h-24 text-wrap break-words"
+                placeholder="Add CTA, link, or sign-off..."
+                className="min-h-16 resize-y rounded-[10px] bg-[#f7f7f8] text-wrap break-words leading-6 focus:bg-white"
                 value={value}
                 onChange={(event) => onChange(event.target.value)}
             />

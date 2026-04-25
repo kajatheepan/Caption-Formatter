@@ -27,9 +27,9 @@ function CopyButton({ text, className }: CopyButtonProps) {
                 variant="outline"
                 size="sm"
                 onClick={copy}
-                className={cn("flex items-center gap-2 hover:bg-gray-100", className)}
+                className={cn("h-8 gap-1.5 rounded-lg bg-white px-3 text-xs hover:bg-gray-100", className)}
             >
-                <Copy /> Copy
+                <Copy className="size-3.5" /> Copy
             </Button>
             {copied && (
                 <span className="mt-2 animate-bounce text-xs text-green-600">Copied!</span>

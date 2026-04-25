@@ -74,41 +74,38 @@ function HomePage() {
             onClear={handleClear}
             onCopyAll={handleCopyAll}
         >
-            <div className="mx-auto grid w-full max-w-6xl gap-6 lg:grid-cols-[380px_minmax(0,1fr)]">
+            <div className="mx-auto grid w-full max-w-[1160px] gap-6 lg:grid-cols-[380px_minmax(0,1fr)]">
                 <section className="flex flex-col gap-4">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-sm uppercase tracking-wide text-muted-foreground">
-                                Caption
+                    <Card className="rounded-[14px] shadow-md shadow-black/5">
+                        <CardHeader className="pb-3">
+                            <CardTitle className="text-[11px] uppercase tracking-[0.12em] text-zinc-400">
+                                ✦ Caption
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-4">
+                        <CardContent className="space-y-4 pt-0">
                             <CaptionEditor value={document.caption} onChange={setCaptionState} />
                             <FooterInput value={document.footer} onChange={setFooterState} />
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-sm uppercase tracking-wide text-muted-foreground">
-                                Hashtags
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <HashtagInput hashtags={document.hashtags} onChange={setHashtags} />
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-sm uppercase tracking-wide text-muted-foreground">
-                                Settings
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
                             <SettingsPanel
                                 settings={document.settings}
                                 onChange={updateSettings}
+                            />
+                        </CardContent>
+                    </Card>
+
+                    <Card className="rounded-[14px] shadow-md shadow-black/5">
+                        <CardHeader className="pb-3">
+                            <CardTitle className="text-[11px] uppercase tracking-[0.12em] text-zinc-400">
+                                # Hashtags
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="pt-0">
+                            <HashtagInput
+                                hashtags={document.hashtags}
+                                onChange={setHashtags}
+                                attachHashtags={document.settings.attachHashtags}
+                                onAttachHashtagsChange={(attachHashtags) =>
+                                    updateSettings({ attachHashtags })
+                                }
                             />
                         </CardContent>
                     </Card>

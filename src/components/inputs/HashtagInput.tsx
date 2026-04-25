@@ -3,13 +3,21 @@ import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cleanHashtags } from "@/lib/hashtags/cleanHashtags";
+import { AttachHashtagsToggle } from "./SettingsPanel";
 
 type HashtagInputProps = {
     hashtags: string[];
     onChange: (hashtags: string[]) => void;
+    attachHashtags: boolean;
+    onAttachHashtagsChange: (checked: boolean) => void;
 };
 
-function HashtagInput({ hashtags, onChange }: HashtagInputProps) {
+function HashtagInput({
+    hashtags,
+    onChange,
+    attachHashtags,
+    onAttachHashtagsChange,
+}: HashtagInputProps) {
     const [value, setValue] = useState("");
 
     const addHashtags = () => {
@@ -30,16 +38,17 @@ function HashtagInput({ hashtags, onChange }: HashtagInputProps) {
     };
 
     return (
-        <div className="space-y-3">
+        <div className="space-y-4">
             <div className="flex gap-2">
                 <Input
                     value={value}
                     onChange={(event) => setValue(event.target.value)}
                     onKeyDown={handleKeyDown}
-                    placeholder="Type hashtags, press Space or Enter"
+                    placeholder="Type hashtag, press Space or Enter..."
+                    className="h-11 rounded-[10px] bg-[#f7f7f8] focus:bg-white"
                 />
-                <Button type="button" variant="outline" onClick={addHashtags}>
-                    Add
+                <Button type="button" variant="outline" onClick={addHashtags} className="h-11">
+                    Auto
                 </Button>
             </div>
 
@@ -58,6 +67,13 @@ function HashtagInput({ hashtags, onChange }: HashtagInputProps) {
                     ))}
                 </div>
             )}
+
+            <div className="border-t pt-4">
+                <AttachHashtagsToggle
+                    checked={attachHashtags}
+                    onChange={onAttachHashtagsChange}
+                />
+            </div>
         </div>
     );
 }

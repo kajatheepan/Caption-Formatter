@@ -8,10 +8,10 @@ type CaptionEditorProps = {
 function CaptionEditor({ value, onChange }: CaptionEditorProps) {
     return (
         <>
-            <h3 className="text-sm font-semibold text-muted-foreground">Main Caption</h3>
+            <h3 className="text-[13px] font-medium text-zinc-700">Main Caption</h3>
             <Textarea
-                placeholder="Enter caption with formatting: *bold*, _italic_, ~strikethrough~"
-                className="min-h-32 text-wrap break-words"
+                placeholder="Write your caption here..."
+                className="min-h-32 resize-y rounded-[10px] bg-[#f7f7f8] text-wrap break-words leading-6 focus:bg-white"
                 value={value}
                 onChange={(event) => onChange(event.target.value)}
             />

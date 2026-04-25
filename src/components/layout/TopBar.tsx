@@ -1,4 +1,4 @@
-import { Copy, RotateCcw, Share2, Sparkles } from "lucide-react";
+import { ArrowDown, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { APP_NAME } from "@/lib/constants";
 
@@ -9,31 +9,25 @@ type TopBarProps = {
 };
 
 function TopBar({ saveStatus, onClear, onCopyAll }: TopBarProps) {
+    void saveStatus;
+
     return (
-        <header className="sticky top-0 z-20 w-full border-b bg-background/95 px-4 py-3 backdrop-blur">
-            <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 sm:flex-row sm:items-center">
+        <header className="sticky top-0 z-20 w-full border-b bg-white px-5 py-3">
+            <div className="mx-auto flex w-full max-w-none items-center gap-3">
                 <div className="flex flex-1 items-center gap-3">
-                    <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                        <Sparkles className="size-4" />
+                    <div className="flex size-7 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                        <Sparkles className="size-3.5 fill-current" />
                     </div>
-                    <div>
-                        <h1 className="text-base font-bold leading-tight">{APP_NAME}</h1>
-                        <p className="text-xs text-muted-foreground">{saveStatus}</p>
-                    </div>
+                    <h1 className="text-base font-bold leading-tight">{APP_NAME}</h1>
                 </div>
 
-                <div className="flex flex-wrap gap-2">
-                    <Button variant="outline" size="sm" onClick={onClear}>
-                        <RotateCcw className="size-4" />
+                <div className="flex gap-2">
+                    <Button variant="outline" size="sm" onClick={onClear} className="h-8 px-4">
                         Clear
                     </Button>
-                    <Button size="sm" onClick={onCopyAll}>
-                        <Copy className="size-4" />
+                    <Button size="sm" onClick={onCopyAll} className="h-8 bg-primary px-4 shadow-sm">
+                        <ArrowDown className="size-4" />
                         Copy All
-                    </Button>
-                    <Button variant="outline" size="sm" disabled>
-                        <Share2 className="size-4" />
-                        Share
                     </Button>
                 </div>
             </div>
