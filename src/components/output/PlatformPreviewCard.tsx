@@ -40,6 +40,26 @@ const platformIconClassNames: Record<Platform, string> = {
     linkedin: "bg-[#0A66C2]/10 text-[#0A66C2]",
 };
 
+function splitInstagramHashtags(text: string) {
+    const bodyLines: string[] = [];
+    const hashtagLines: string[] = [];
+
+    for (const line of text.split("\n")) {
+        const trimmedLine = line.trim();
+
+        if (trimmedLine && /^(#\S+\s*)+$/.test(trimmedLine)) {
+            hashtagLines.push(trimmedLine);
+        } else {
+            bodyLines.push(line);
+        }
+    }
+
+    return {
+        body: bodyLines.join("\n").trim(),
+        hashtags: hashtagLines.join("\n").trim(),
+    };
+}
+
 function renderPreviewShell(platform: Platform, text: string) {
     const previewText = text || "Start typing to see your preview...";
     const textClassName = text
@@ -65,6 +85,37 @@ function renderPreviewShell(platform: Platform, text: string) {
                             05:38 <span className="text-sky-400">✓✓</span>
                         </div>
                     </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (platform === "instagram") {
+        const instagramText = splitInstagramHashtags(text);
+
+        return (
+            <div className="overflow-hidden rounded-[10px] border bg-white">
+                <div className="flex items-center gap-2 border-b px-3 py-2">
+                    <div className="grid size-8 place-items-center rounded-full bg-gradient-to-br from-orange-400 via-pink-500 to-purple-700 text-xs text-white">
+                        IG
+                    </div>
+                    <span className="text-sm font-bold">your_handle</span>
+                    <span className="ml-auto text-xs font-semibold text-sky-500">Follow</span>
+                </div>
+                <div className="grid aspect-square place-items-center bg-gradient-to-br from-indigo-400 to-purple-600 text-3xl">
+                    +
+                </div>
+                <div className="space-y-2 px-3 py-3 text-[13px] leading-5">
+                    <p className={text ? "whitespace-pre-wrap break-words" : "italic text-zinc-400"}>
+                        <span className="font-bold not-italic text-zinc-900">your_handle </span>
+                        {text ? instagramText.body || instagramText.hashtags : previewText}
+                    </p>
+                    {instagramText.body && instagramText.hashtags && (
+                        <p className="whitespace-pre-wrap break-words text-[#00376B]">
+                            {instagramText.hashtags}
+                        </p>
+                    )}
+                    <p className="text-xs text-zinc-400">View all 42 comments</p>
                 </div>
             </div>
         );
