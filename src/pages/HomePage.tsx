@@ -1,12 +1,16 @@
 import { useEffect, useRef, useState } from "react";
+import { Sparkles } from "lucide-react";
 import AppLayout from "@/components/layout/AppLayout";
 import FooterInput from "@/components/inputs/FooterInput";
 import HashtagInput from "@/components/inputs/HashtagInput";
 import SettingsPanel from "@/components/inputs/SettingsPanel";
 import CaptionEditor from "@/components/editor/CaptionEditor";
 import PlatformTabs from "@/components/output/PlatformTabs";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatAllPlatforms } from "@/lib/formatter";
+import { cleanText } from "@/lib/formatter/cleanText";
+import { cleanHashtags } from "@/lib/hashtags/cleanHashtags";
 import useClipboard from "@/hooks/useClipboard";
 import { useLocalStorage } from "@/hooks/useLocalDraft";
 import useCaptionDocument from "@/hooks/useCaptionDocument";
@@ -44,6 +48,7 @@ function HomePage() {
     });
 
     const outputs = formatAllPlatforms(document);
+    const showCleanFormatting = Boolean(document.caption.trim() || document.footer.trim());
 
     const debouncedSetCaption = useRef(
         debounce((value: string) => setCaption(value), 1000)
@@ -74,6 +79,12 @@ function HomePage() {
         void copyAll(text);
     };
 
+    const handleCleanFormatting = () => {
+        setCaptionState(cleanText(document.caption));
+        setFooterState(cleanText(document.footer));
+        setHashtags(cleanHashtags(document.hashtags));
+    };
+
     return (
         <AppLayout
             saveStatus="Saved locally"
@@ -93,6 +104,25 @@ function HomePage() {
                         <CardContent className="space-y-4 pt-0">
                             <CaptionEditor value={document.caption} onChange={setCaptionState} />
                             <FooterInput value={document.footer} onChange={setFooterState} />
+                            {showCleanFormatting && (
+                                <div className="flex items-center justify-between gap-3 rounded-xl border bg-primary/5 px-3 py-3">
+                                    <div>
+                                        <p className="text-sm font-semibold text-zinc-800">Format cleanup</p>
+                                        <p className="text-xs text-muted-foreground">
+                                            Remove extra spaces and blank lines.
+                                        </p>
+                                    </div>
+                                    <Button
+                                        type="button"
+                                        size="sm"
+                                        onClick={handleCleanFormatting}
+                                        className="h-9 shrink-0 rounded-lg px-3 text-xs"
+                                    >
+                                        <Sparkles className="size-3.5" />
+                                        Clean
+                                    </Button>
+                                </div>
+                            )}
                             <SettingsPanel
                                 settings={document.settings}
                                 onChange={updateSettings}
