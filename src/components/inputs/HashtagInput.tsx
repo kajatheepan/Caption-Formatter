@@ -21,6 +21,10 @@ function HashtagInput({
     const [value, setValue] = useState("");
 
     const addHashtags = () => {
+        if (!value.trim()) {
+            return;
+        }
+
         const cleanedHashtags = cleanHashtags([...hashtags, value]);
         onChange(cleanedHashtags);
         setValue("");
@@ -31,7 +35,7 @@ function HashtagInput({
     };
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === "Enter" || event.key === " ") {
+        if (event.key === "Enter" || event.key === " " || event.key === ",") {
             event.preventDefault();
             addHashtags();
         }
@@ -44,7 +48,7 @@ function HashtagInput({
                     value={value}
                     onChange={(event) => setValue(event.target.value)}
                     onKeyDown={handleKeyDown}
-                    placeholder="Type hashtag, press Space or Enter..."
+                    placeholder="Type hashtag, press Space, comma, or Enter..."
                     className="h-11 rounded-[10px] bg-[#f7f7f8] focus:bg-white"
                 />
                 <Button type="button" variant="outline" onClick={addHashtags} className="h-11">
