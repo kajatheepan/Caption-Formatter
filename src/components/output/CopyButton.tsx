@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 type CopyButtonProps = {
     text: string;
+    className?: string;
 };
 
-function CopyButton({ text }: CopyButtonProps) {
+function CopyButton({ text, className }: CopyButtonProps) {
     const [copied, setCopied] = useState(false);
 
     const copy = async () => {
@@ -23,8 +25,9 @@ function CopyButton({ text }: CopyButtonProps) {
         <>
             <Button
                 variant="outline"
+                size="sm"
                 onClick={copy}
-                className="flex min-w-full items-center gap-2 hover:bg-gray-100"
+                className={cn("flex items-center gap-2 hover:bg-gray-100", className)}
             >
                 <Copy /> Copy
             </Button>

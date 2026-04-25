@@ -42,6 +42,7 @@ function PlatformTabs({ outputs, activePlatform, onPlatformChange }: PlatformTab
                 output.platform === activeOutput.platform ? (
                     <PlatformPreviewCard
                         key={output.platform}
+                        platform={output.platform}
                         label={output.label}
                         text={output.text}
                         characterCount={output.characterCount}
