@@ -7,12 +7,13 @@ import CaptionEditor from "@/components/editor/CaptionEditor";
 import PlatformTabs from "@/components/output/PlatformTabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatAllPlatforms } from "@/lib/formatter";
+import useClipboard from "@/hooks/useClipboard";
 import { useLocalStorage } from "@/hooks/useLocalDraft";
 import useCaptionDocument from "@/hooks/useCaptionDocument";
 import type { Platform } from "@/types/platform";
 
 function debounce<T extends (...args: string[]) => void>(func: T, delay: number) {
-    let timer: NodeJS.Timeout;
+    let timer: ReturnType<typeof setTimeout>;
 
     return (...args: Parameters<T>) => {
         clearTimeout(timer);
@@ -24,6 +25,11 @@ function HomePage() {
     const { value: storedCaption, setStoredValue: setCaption } = useLocalStorage("caption", "");
     const { value: storedFooter, setStoredValue: setFooter } = useLocalStorage("footer", "");
     const [activePlatform, setActivePlatform] = useState<Platform>("whatsapp");
+    const {
+        copy: copyAll,
+        copied: copyAllCopied,
+        error: copyAllError,
+    } = useClipboard();
 
     const {
         document,
@@ -60,12 +66,12 @@ function HomePage() {
         setFooter("");
     };
 
-    const handleCopyAll = async () => {
+    const handleCopyAll = () => {
         const text = outputs
             .map((output) => `=== ${output.label} ===\n${output.text}`)
             .join("\n\n");
 
-        await navigator.clipboard.writeText(text);
+        void copyAll(text);
     };
 
     return (
@@ -73,6 +79,8 @@ function HomePage() {
             saveStatus="Saved locally"
             onClear={handleClear}
             onCopyAll={handleCopyAll}
+            copyAllCopied={copyAllCopied}
+            copyAllError={Boolean(copyAllError)}
         >
             <div className="mx-auto grid w-full max-w-[1160px] gap-6 lg:grid-cols-[380px_minmax(0,1fr)]">
                 <section className="flex flex-col gap-4">

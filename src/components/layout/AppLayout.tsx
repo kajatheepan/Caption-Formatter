@@ -6,6 +6,8 @@ type AppLayoutProps = {
     saveStatus?: string;
     onClear?: () => void;
     onCopyAll?: () => void;
+    copyAllCopied?: boolean;
+    copyAllError?: boolean;
 };
 
 function AppLayout({
@@ -13,10 +15,18 @@ function AppLayout({
     saveStatus = "Saved locally",
     onClear = () => undefined,
     onCopyAll = () => undefined,
+    copyAllCopied = false,
+    copyAllError = false,
 }: AppLayoutProps) {
     return (
         <div className="flex min-h-dvh w-full flex-col bg-[#f7f7f8]">
-            <TopBar saveStatus={saveStatus} onClear={onClear} onCopyAll={onCopyAll} />
+            <TopBar
+                saveStatus={saveStatus}
+                onClear={onClear}
+                onCopyAll={onCopyAll}
+                copyAllCopied={copyAllCopied}
+                copyAllError={copyAllError}
+            />
             <main className="w-full flex-1 px-4 py-7 sm:px-6 lg:px-8">
                 {children}
             </main>

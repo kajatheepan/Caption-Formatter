@@ -6,9 +6,17 @@ type TopBarProps = {
     saveStatus: string;
     onClear: () => void;
     onCopyAll: () => void;
+    copyAllCopied?: boolean;
+    copyAllError?: boolean;
 };
 
-function TopBar({ saveStatus, onClear, onCopyAll }: TopBarProps) {
+function TopBar({
+    saveStatus,
+    onClear,
+    onCopyAll,
+    copyAllCopied = false,
+    copyAllError = false,
+}: TopBarProps) {
     void saveStatus;
 
     return (
@@ -27,8 +35,11 @@ function TopBar({ saveStatus, onClear, onCopyAll }: TopBarProps) {
                     </Button>
                     <Button size="sm" onClick={onCopyAll} className="h-8 bg-primary px-4 shadow-sm">
                         <ArrowDown className="size-4" />
-                        Copy All
+                        {copyAllCopied ? "Copied" : "Copy All"}
                     </Button>
+                    {copyAllError && (
+                        <span className="self-center text-xs text-red-600">Copy failed</span>
+                    )}
                 </div>
             </div>
         </header>
