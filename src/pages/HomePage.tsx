@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import AppLayout from "@/components/layout/AppLayout";
 import FooterInput from "@/components/inputs/FooterInput";
+import HashtagInput from "@/components/inputs/HashtagInput";
+import SettingsPanel from "@/components/inputs/SettingsPanel";
 import CaptionEditor from "@/components/editor/CaptionEditor";
 import PlatformTabs from "@/components/output/PlatformTabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,6 +29,7 @@ function HomePage() {
         document,
         setCaption: setCaptionState,
         setFooter: setFooterState,
+        setHashtags,
         updateSettings,
         resetDocument,
     } = useCaptionDocument({
@@ -82,22 +85,31 @@ function HomePage() {
                         <CardContent className="space-y-4">
                             <CaptionEditor value={document.caption} onChange={setCaptionState} />
                             <FooterInput value={document.footer} onChange={setFooterState} />
-                            <label className="flex items-center justify-between gap-4 rounded-lg border bg-background px-3 py-2">
-                                <span>
-                                    <span className="block text-sm font-semibold">Include Footer</span>
-                                    <span className="block text-xs text-muted-foreground">
-                                        Append footer to formatted outputs
-                                    </span>
-                                </span>
-                                <input
-                                    type="checkbox"
-                                    checked={document.settings.includeFooter}
-                                    onChange={(event) =>
-                                        updateSettings({ includeFooter: event.target.checked })
-                                    }
-                                    className="size-4 accent-primary"
-                                />
-                            </label>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-sm uppercase tracking-wide text-muted-foreground">
+                                Hashtags
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <HashtagInput hashtags={document.hashtags} onChange={setHashtags} />
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-sm uppercase tracking-wide text-muted-foreground">
+                                Settings
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <SettingsPanel
+                                settings={document.settings}
+                                onChange={updateSettings}
+                            />
                         </CardContent>
                     </Card>
                 </section>
