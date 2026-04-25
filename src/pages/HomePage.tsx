@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import AppLayout from "@/components/layout/AppLayout";
 import FooterInput from "@/components/inputs/FooterInput";
 import CaptionEditor from "@/components/editor/CaptionEditor";
@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatAllPlatforms } from "@/lib/formatter";
 import { useLocalStorage } from "@/hooks/useLocalDraft";
 import useCaptionDocument from "@/hooks/useCaptionDocument";
+import type { Platform } from "@/types/platform";
 
 function debounce<T extends (...args: string[]) => void>(func: T, delay: number) {
     let timer: NodeJS.Timeout;
@@ -20,6 +21,7 @@ function debounce<T extends (...args: string[]) => void>(func: T, delay: number)
 function HomePage() {
     const { value: storedCaption, setStoredValue: setCaption } = useLocalStorage("caption", "");
     const { value: storedFooter, setStoredValue: setFooter } = useLocalStorage("footer", "");
+    const [activePlatform, setActivePlatform] = useState<Platform>("whatsapp");
 
     const {
         document,
@@ -86,9 +88,13 @@ function HomePage() {
                 <section className="flex min-w-0 flex-col gap-4">
                     <div className="flex items-center justify-between px-1">
                         <h2 className="text-lg font-bold">Platform Preview</h2>
-                        <p className="text-sm text-muted-foreground">All formatted outputs</p>
+                        <p className="text-sm text-muted-foreground">Select one platform</p>
                     </div>
-                    <PlatformTabs outputs={outputs} />
+                    <PlatformTabs
+                        outputs={outputs}
+                        activePlatform={activePlatform}
+                        onPlatformChange={setActivePlatform}
+                    />
                 </section>
             </div>
         </AppLayout>
