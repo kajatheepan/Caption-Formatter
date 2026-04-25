@@ -27,6 +27,7 @@ function HomePage() {
         document,
         setCaption: setCaptionState,
         setFooter: setFooterState,
+        updateSettings,
         resetDocument,
     } = useCaptionDocument({
         caption: storedCaption,
@@ -81,6 +82,22 @@ function HomePage() {
                         <CardContent className="space-y-4">
                             <CaptionEditor value={document.caption} onChange={setCaptionState} />
                             <FooterInput value={document.footer} onChange={setFooterState} />
+                            <label className="flex items-center justify-between gap-4 rounded-lg border bg-background px-3 py-2">
+                                <span>
+                                    <span className="block text-sm font-semibold">Include Footer</span>
+                                    <span className="block text-xs text-muted-foreground">
+                                        Append footer to formatted outputs
+                                    </span>
+                                </span>
+                                <input
+                                    type="checkbox"
+                                    checked={document.settings.includeFooter}
+                                    onChange={(event) =>
+                                        updateSettings({ includeFooter: event.target.checked })
+                                    }
+                                    className="size-4 accent-primary"
+                                />
+                            </label>
                         </CardContent>
                     </Card>
                 </section>
