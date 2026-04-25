@@ -17,7 +17,7 @@ function AppLayout({
     return (
         <div className="flex min-h-screen w-full flex-col items-center bg-muted/30">
             <TopBar saveStatus={saveStatus} onClear={onClear} onCopyAll={onCopyAll} />
-            <main className="flex w-full flex-1 flex-col items-center px-4 py-8">
+            <main className="w-full flex-1 px-4 py-6 sm:px-6 lg:px-8">
                 {children}
             </main>
         </div>
