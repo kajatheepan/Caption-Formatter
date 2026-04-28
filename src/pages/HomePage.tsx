@@ -14,7 +14,39 @@ import { cleanHashtags } from "@/lib/hashtags/cleanHashtags";
 import useClipboard from "@/hooks/useClipboard";
 import { useLocalStorage } from "@/hooks/useLocalDraft";
 import useCaptionDocument from "@/hooks/useCaptionDocument";
+import type { CaptionDocument } from "@/types/caption";
 import type { Platform } from "@/types/platform";
+
+const defaultSettings: CaptionDocument["settings"] = {
+    includeFooter: true,
+    attachHashtags: false,
+    optimizeForPlatform: true,
+    previewMode: true,
+};
+
+function parseStoredHashtags(value: string) {
+    try {
+        const parsedValue = JSON.parse(value);
+        return Array.isArray(parsedValue)
+            ? parsedValue.filter((item): item is string => typeof item === "string")
+            : [];
+    } catch {
+        return [];
+    }
+}
+
+function parseStoredSettings(value: string): CaptionDocument["settings"] {
+    try {
+        const parsedValue = JSON.parse(value) as Partial<CaptionDocument["settings"]>;
+
+        return {
+            ...defaultSettings,
+            ...parsedValue,
+        };
+    } catch {
+        return defaultSettings;
+    }
+}
 
 function debounce<T extends (...args: string[]) => void>(func: T, delay: number) {
     let timer: ReturnType<typeof setTimeout>;
@@ -28,6 +60,11 @@ function debounce<T extends (...args: string[]) => void>(func: T, delay: number)
 function HomePage() {
     const { value: storedCaption, setStoredValue: setCaption } = useLocalStorage("caption", "");
     const { value: storedFooter, setStoredValue: setFooter } = useLocalStorage("footer", "");
+    const { value: storedHashtags, setStoredValue: setStoredHashtags } = useLocalStorage("hashtags", "[]");
+    const { value: storedSettings, setStoredValue: setStoredSettings } = useLocalStorage(
+        "settings",
+        JSON.stringify(defaultSettings)
+    );
     const [activePlatform, setActivePlatform] = useState<Platform>("whatsapp");
     const {
         copy: copyAll,
@@ -47,6 +84,8 @@ function HomePage() {
     } = useCaptionDocument({
         caption: storedCaption,
         footer: storedFooter,
+        hashtags: parseStoredHashtags(storedHashtags),
+        settings: parseStoredSettings(storedSettings),
     });
 
     const outputs = formatAllPlatforms(document);
@@ -67,10 +106,20 @@ function HomePage() {
         debouncedSetFooter(document.footer);
     }, [document.footer, debouncedSetFooter]);
 
+    useEffect(() => {
+        setStoredHashtags(JSON.stringify(document.hashtags));
+    }, [document.hashtags, setStoredHashtags]);
+
+    useEffect(() => {
+        setStoredSettings(JSON.stringify(document.settings));
+    }, [document.settings, setStoredSettings]);
+
     const handleClear = () => {
         resetDocument();
         setCaption("");
         setFooter("");
+        setStoredHashtags("[]");
+        setStoredSettings(JSON.stringify(defaultSettings));
     };
 
     const handleCopyAll = () => {
