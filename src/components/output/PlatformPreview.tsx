@@ -1,5 +1,13 @@
 import { useState } from "react";
-import { Bookmark, Heart, MessageCircle, Send } from "lucide-react";
+import {
+    Bookmark,
+    Heart,
+    MessageCircle,
+    MessageSquare,
+    Repeat2,
+    Send,
+    ThumbsUp,
+} from "lucide-react";
 import type { Platform } from "@/types/platform";
 
 type PlatformPreviewProps = {
@@ -178,13 +186,8 @@ function InstagramPreview({ text, previewText }: InstagramPreviewProps) {
                 <span className="ml-auto text-lg font-bold leading-none">...</span>
             </div>
 
-            <div className="relative mx-3 aspect-square overflow-hidden rounded-md border bg-zinc-50">
-                <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-zinc-100 via-zinc-50 to-zinc-200" />
-                <div className="absolute inset-10 rounded-2xl border border-dashed border-zinc-300 bg-white/60" />
-                <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-3 text-zinc-400">
-                    <div className="size-12 rounded-full border-4 border-zinc-200 border-t-zinc-400" />
-                    <div className="text-xs font-semibold">Post image preview</div>
-                </div>
+            <div className="mx-3">
+                <PostImagePlaceholder />
             </div>
 
             <div className="flex items-center gap-4 px-3 py-3 text-zinc-950">
@@ -205,6 +208,84 @@ function InstagramPreview({ text, previewText }: InstagramPreviewProps) {
                         {instagramText.hashtags}
                     </p>
                 )}
+            </div>
+        </div>
+    );
+}
+
+function PostImagePlaceholder() {
+    return (
+        <div className="relative aspect-square overflow-hidden rounded-md border bg-zinc-50">
+            <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-zinc-100 via-zinc-50 to-zinc-200" />
+            <div className="absolute inset-10 rounded-2xl border border-dashed border-zinc-300 bg-white/60" />
+            <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-3 text-zinc-400">
+                <div className="size-12 rounded-full border-4 border-zinc-200 border-t-zinc-400" />
+                <div className="text-xs font-semibold">Post image preview</div>
+            </div>
+        </div>
+    );
+}
+
+function LinkedInPreview({ previewText, textClassName }: PreviewShellProps) {
+    const [isExpanded, setIsExpanded] = useState(false);
+
+    return (
+        <div className="overflow-hidden rounded-[10px] border bg-white">
+            <div className="flex items-start gap-3 px-4 py-3">
+                <div className="grid size-11 shrink-0 place-items-center rounded bg-[#0A66C2]/10 text-xs font-bold text-[#0A66C2]">
+                    CF
+                </div>
+                <div className="min-w-0">
+                    <div className="text-sm font-bold text-zinc-950">CaptionForge</div>
+                    <div className="text-xs text-zinc-500">Content tools for creators</div>
+                    <div className="text-xs text-zinc-500">6mo • 🌐</div>
+                </div>
+                <span className="ml-auto text-lg font-bold leading-none text-zinc-700">...</span>
+            </div>
+
+            <div className="space-y-2 px-4 pb-3 text-[13px] leading-5">
+                <div className={isExpanded ? textClassName : `${textClassName} line-clamp-3`}>
+                    {previewText}
+                </div>
+                <button
+                    type="button"
+                    onClick={() => setIsExpanded((current) => !current)}
+                    className="text-xs font-semibold text-zinc-500"
+                >
+                    {isExpanded ? "show less" : "...more"}
+                </button>
+            </div>
+
+            <div className="px-4 pb-3">
+                <PostImagePlaceholder />
+            </div>
+
+            <div className="flex items-center justify-between border-b px-4 py-2 text-xs text-zinc-500">
+                <div className="flex items-center gap-1">
+                    <span className="grid size-4 place-items-center rounded-full bg-[#0A66C2] text-[9px] text-white">
+                        👍
+                    </span>
+                    <span>5</span>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-4 px-2 py-2 text-xs font-semibold text-zinc-600">
+                <button type="button" className="flex items-center justify-center gap-1 rounded-md py-2 hover:bg-zinc-100">
+                    <ThumbsUp className="size-4" />
+                    Like
+                </button>
+                <button type="button" className="flex items-center justify-center gap-1 rounded-md py-2 hover:bg-zinc-100">
+                    <MessageSquare className="size-4" />
+                    Comment
+                </button>
+                <button type="button" className="flex items-center justify-center gap-1 rounded-md py-2 hover:bg-zinc-100">
+                    <Repeat2 className="size-4" />
+                    Repost
+                </button>
+                <button type="button" className="flex items-center justify-center gap-1 rounded-md py-2 hover:bg-zinc-100">
+                    <Send className="size-4" />
+                    Send
+                </button>
             </div>
         </div>
     );
@@ -236,6 +317,10 @@ function PlatformPreview({ platform, text }: PlatformPreviewProps) {
                 textClassName={textClassName}
             />
         );
+    }
+
+    if (platform === "linkedin") {
+        return <LinkedInPreview previewText={previewText} textClassName={textClassName} />;
     }
 
     return (
