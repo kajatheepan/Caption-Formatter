@@ -125,7 +125,7 @@ function PlatformPreviewCard({
                             onChange={(event) => onCustomTextChange(event.target.value)}
                             className="min-h-48 resize-y rounded-[10px] bg-white text-sm leading-6"
                         />
-                        <div className="flex flex-wrap items-center justify-between gap-3">
+                        <div className="flex flex-wrap items-center gap-3">
                             <button
                                 type="button"
                                 onClick={() => {
@@ -135,13 +135,6 @@ function PlatformPreviewCard({
                                 className="text-xs font-semibold text-primary"
                             >
                                 Reset to auto
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setIsEditing(false)}
-                                className="rounded-lg bg-primary px-4 py-2 text-xs font-semibold text-white"
-                            >
-                                Done
                             </button>
                         </div>
                     </div>

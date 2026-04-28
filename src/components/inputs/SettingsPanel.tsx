@@ -60,11 +60,6 @@ function SettingsPanel({ settings, onChange }: SettingsPanelProps) {
                 checked={settings.includeFooter}
                 onChange={(includeFooter) => onChange({ includeFooter })}
             />
-            <SettingRow
-                label="Optimize"
-                checked={settings.optimizeForPlatform}
-                onChange={(optimizeForPlatform) => onChange({ optimizeForPlatform })}
-            />
         </div>
     );
 }
