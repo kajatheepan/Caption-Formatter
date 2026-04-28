@@ -1,10 +1,11 @@
+import type { JSONContent } from "@tiptap/core";
 import type { Platform } from "./platform";
 
 export type CaptionDocument = {
     id?: string | null;
     title: string;
     caption: string;
-    editorContent?: unknown;
+    editorContent?: JSONContent | null;
     footer: string;
     hashtags: string[];
     customPlatformText: Partial<Record<Platform, string>>;

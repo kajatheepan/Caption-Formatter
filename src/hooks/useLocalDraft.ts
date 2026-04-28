@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from "react";
+import type { JSONContent } from "@tiptap/core";
 import type { CaptionDocument } from "@/types/caption";
 
 const LOCAL_DRAFT_KEY = "caption-forge-draft";
@@ -15,6 +16,10 @@ function isStringArray(value: unknown): value is string[] {
     return Array.isArray(value) && value.every((item) => typeof item === "string");
 }
 
+function isEditorContent(value: unknown): value is JSONContent {
+    return Boolean(value && typeof value === "object");
+}
+
 function parseDraft(value: string | null): Partial<CaptionDocument> | undefined {
     if (!value) {
         return undefined;
@@ -25,6 +30,7 @@ function parseDraft(value: string | null): Partial<CaptionDocument> | undefined 
 
         return {
             caption: typeof parsedValue.caption === "string" ? parsedValue.caption : "",
+            editorContent: isEditorContent(parsedValue.editorContent) ? parsedValue.editorContent : null,
             footer: typeof parsedValue.footer === "string" ? parsedValue.footer : "",
             hashtags: isStringArray(parsedValue.hashtags) ? parsedValue.hashtags : [],
             customPlatformText: parsedValue.customPlatformText ?? {},
@@ -66,6 +72,7 @@ function useLocalDraft() {
         saveTimer.current = setTimeout(() => {
             const nextDraft: Partial<CaptionDocument> = {
                 caption: document.caption,
+                editorContent: document.editorContent,
                 footer: document.footer,
                 hashtags: document.hashtags,
                 settings: document.settings,

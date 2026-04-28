@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { JSONContent } from "@tiptap/core";
 import type { CaptionDocument } from "@/types/caption";
 import type { Platform } from "@/types/platform";
 
@@ -6,6 +7,7 @@ const defaultDocument: CaptionDocument = {
     id: null,
     title: "Untitled caption",
     caption: "",
+    editorContent: null,
     footer: "",
     hashtags: [],
     customPlatformText: {},
@@ -46,6 +48,13 @@ function useCaptionDocument(initialDocument?: Partial<CaptionDocument>) {
         setDocument((currentDocument) => ({
             ...currentDocument,
             footer,
+        }));
+    };
+
+    const setEditorContent = (editorContent: JSONContent | null) => {
+        setDocument((currentDocument) => ({
+            ...currentDocument,
+            editorContent,
         }));
     };
 
@@ -113,6 +122,7 @@ function useCaptionDocument(initialDocument?: Partial<CaptionDocument>) {
     return {
         document,
         setCaption,
+        setEditorContent,
         setFooter,
         addHashtag,
         removeHashtag,

@@ -28,6 +28,7 @@ function HomePage() {
     const {
         document,
         setCaption: setCaptionState,
+        setEditorContent,
         setFooter: setFooterState,
         setHashtags,
         updateSettings,
@@ -58,6 +59,7 @@ function HomePage() {
 
     const handleCleanFormatting = () => {
         setCaptionState(cleanText(document.caption));
+        setEditorContent(null);
         setFooterState(cleanText(document.footer));
         setHashtags(cleanHashtags(document.hashtags));
     };
@@ -81,8 +83,13 @@ function HomePage() {
                         <CardContent className="space-y-4 pt-0">
                             <CaptionEditor
                                 value={document.caption}
+                                editorContent={document.editorContent}
                                 onChange={setCaptionState}
-                                onClear={() => setCaptionState("")}
+                                onEditorContentChange={setEditorContent}
+                                onClear={() => {
+                                    setCaptionState("");
+                                    setEditorContent(null);
+                                }}
                             />
                             <FooterInput value={document.footer} onChange={setFooterState} />
                             {showCleanFormatting && (

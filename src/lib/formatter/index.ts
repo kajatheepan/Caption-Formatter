@@ -7,6 +7,9 @@ import { formatLinkedinCaption, LinkedinFormatter } from "./linkedinFormatter";
 import { formatTelegramCaption, TelegramFormatter } from "./telegramFormatter";
 import { formatWhatsappCaption, WhatsappFormatter } from "./whatsappFormatter";
 import { formatYoutubeCaption, YoutubeFormatter } from "./youtubeFormatter";
+import { plainTextExporter } from "./exporters/plainTextExporter";
+import { telegramRichTextExporter } from "./exporters/telegramRichTextExporter";
+import { whatsappRichTextExporter } from "./exporters/whatsappRichTextExporter";
 
 export { TelegramFormatter } from "./telegramFormatter";
 export { YoutubeFormatter } from "./youtubeFormatter";
@@ -38,28 +41,57 @@ function joinCaptionParts(caption: string, footer: string) {
     return caption || footer;
 }
 
-function getRawTextForPlatform(platform: Platform, document: CaptionDocument) {
+function getCaptionSource(platform: Platform, document: CaptionDocument) {
+    if (!document.editorContent) {
+        return document.caption;
+    }
+
     if (platform === "whatsapp") {
-        return formatWhatsappCaption(document);
+        return whatsappRichTextExporter(document.editorContent);
     }
 
     if (platform === "telegram") {
-        return formatTelegramCaption(document);
+        return telegramRichTextExporter(document.editorContent);
+    }
+
+    return plainTextExporter(document.editorContent);
+}
+
+function buildDocumentForPlatform(platform: Platform, document: CaptionDocument): CaptionDocument {
+    return {
+        ...document,
+        caption: getCaptionSource(platform, document),
+    };
+}
+
+function getRawTextForPlatform(platform: Platform, document: CaptionDocument) {
+    const platformDocument = buildDocumentForPlatform(platform, document);
+
+    if (platform === "whatsapp") {
+        return formatWhatsappCaption(platformDocument);
+    }
+
+    if (platform === "telegram") {
+        return formatTelegramCaption(platformDocument);
     }
 
     if (platform === "youtube") {
-        return formatYoutubeCaption(document);
+        return formatYoutubeCaption(platformDocument);
     }
 
     if (platform === "instagram") {
-        return formatInstagramCaption(document);
+        return formatInstagramCaption(platformDocument);
     }
 
     if (platform === "linkedin") {
-        return formatLinkedinCaption(document);
+        return formatLinkedinCaption(platformDocument);
     }
 
-    return joinCaptionParts(document.caption, document.footer);
+    return joinCaptionParts(platformDocument.caption, platformDocument.footer);
+}
+
+function hasCustomPlatformText(platform: Platform, document: CaptionDocument) {
+    return document.customPlatformText[platform] !== undefined;
 }
 
 export function formatForPlatform(
@@ -67,8 +99,12 @@ export function formatForPlatform(
     document: CaptionDocument
 ): FormattedOutput {
     const config = PLATFORM_CONFIG[platform];
-    const rawText = document.customPlatformText[platform] ?? getRawTextForPlatform(platform, document);
-    const text = formatters[platform](rawText);
+    const rawText = hasCustomPlatformText(platform, document)
+        ? document.customPlatformText[platform] ?? ""
+        : getRawTextForPlatform(platform, document);
+    const text = hasCustomPlatformText(platform, document) || document.editorContent
+        ? rawText
+        : formatters[platform](rawText);
     const characterCount = text.length;
 
     return {

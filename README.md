@@ -93,6 +93,11 @@ Replace the textarea with TipTap rich text editor.
 - Write main caption
 - Bold formatting
 - Italic formatting
+- Strikethrough formatting
+- Underline formatting
+- Inline code formatting
+- Code block formatting
+- Quote formatting
 - Bullet list
 - Numbered list
 - Line breaks
@@ -106,7 +111,7 @@ Replace the textarea with TipTap rich text editor.
 Use TipTap.
 
 ```bash
-npm install @tiptap/react @tiptap/starter-kit
+npm install @tiptap/react @tiptap/starter-kit @tiptap/extension-underline @tiptap/extension-link
 ```
 
 ### Why TipTap?
@@ -122,8 +127,14 @@ TipTap JSON
     ↓
 Formatter engine
     ↓
-WhatsApp / Telegram / YouTube / Instagram / X / LinkedIn output
+WhatsApp / Telegram / YouTube / Instagram / LinkedIn output
 ```
+
+Important rule:
+
+The editor should stay rich and structured. Do not insert WhatsApp or Telegram
+markdown directly into the editor. Exporters should decide the final platform
+syntax.
 
 ---
 
@@ -238,6 +249,11 @@ WhatsApp supports simple markdown-like formatting.
 Bold: *text*
 Italic: _text_
 Strikethrough: ~text~
+Inline code: `text`
+Monospace/code block: ```text```
+Bullet list: - item
+Numbered list: 1. item
+Quote: > text
 ```
 
 #### Output Example
@@ -259,18 +275,29 @@ Telegram supports markdown-style formatting.
 
 #### Rules
 
+For normal manual copy/paste into the Telegram app, export clean readable text.
+Telegram does not automatically render pasted Markdown symbols in normal chats.
+
 ```text
-Bold: **text**
-Italic: __text__
-Code: `text`
+Bold: text
+Italic: text
+Underline: text
+Strikethrough: text
+Spoiler: text
+Inline code: text
+Code block: text
+Quote: > text
+Link: text (url)
+Bullet list: - item
+Numbered list: 1. item
 ```
 
 #### Output Example
 
 ```text
-**Big update today**
+Big update today
 
-__This is important.__
+This is important.
 
 Follow for more.
 #update #social
@@ -887,8 +914,13 @@ Responsibilities:
 
 - Bold
 - Italic
+- Strikethrough
+- Underline
 - Bullet list
 - Numbered list
+- Quote
+- Inline code
+- Code block
 - Clear formatting
 
 ---
