@@ -4,8 +4,11 @@ import {
     Heart,
     MessageCircle,
     MessageSquare,
+    MoreVertical,
     Repeat2,
     Send,
+    Share2,
+    ThumbsDown,
     ThumbsUp,
 } from "lucide-react";
 import type { Platform } from "@/types/platform";
@@ -97,57 +100,14 @@ function YouTubePreview({ previewText, textClassName }: PreviewShellProps) {
 
     return (
         <div className="overflow-hidden rounded-[10px] border bg-white">
-            <div className="relative aspect-video overflow-hidden bg-[#5b3428]">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.18),transparent_26%),linear-gradient(135deg,rgba(0,0,0,0.45),transparent_34%),linear-gradient(90deg,rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(0deg,rgba(255,255,255,0.08)_1px,transparent_1px)] bg-[length:auto,auto,42px_42px,42px_42px]" />
-                <div className="absolute left-3 top-3 h-[38%] w-[22%] rounded-sm bg-zinc-900/80 shadow-lg" />
-                <div className="absolute left-[26%] top-3 h-[82%] w-[48%] rounded-sm border border-white/20 bg-zinc-100/90 shadow-xl">
-                    <div className="grid h-full grid-cols-6 grid-rows-6">
-                        {Array.from({ length: 36 }).map((_, index) => (
-                            <div
-                                key={index}
-                                className={index % 2 === 0 ? "bg-zinc-300/90" : "bg-zinc-100/90"}
-                            />
-                        ))}
-                    </div>
+            <div className="flex items-start gap-3 px-4 py-4">
+                <div className="grid size-9 shrink-0 place-items-center rounded-full bg-red-600 text-xs font-bold text-white">
+                    CF
                 </div>
-                <div className="absolute bottom-0 left-[26%] right-[26%] h-[16%] bg-red-500/75" />
-                <div className="absolute bottom-5 left-4 text-lg font-bold text-white drop-shadow">
-                    Video thumbnail
-                </div>
-                <div className="absolute right-4 top-[48%] h-[32%] w-[20%] rounded-sm bg-zinc-200/70 shadow-lg" />
-            </div>
-
-            <div className="space-y-3 p-3">
-                <h3 className="text-sm font-bold leading-5 text-zinc-950">
-                    Your video title appears here
-                </h3>
-
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div className="flex items-center gap-2">
-                        <div className="grid size-8 place-items-center rounded-full bg-red-600 text-xs font-bold text-white">
-                            CF
-                        </div>
-                        <div>
-                            <div className="text-xs font-bold text-zinc-950">Your Channel</div>
-                            <div className="text-[10px] text-zinc-500">37.4K subscribers</div>
-                        </div>
-                        <span className="rounded-full bg-zinc-950 px-3 py-1.5 text-[10px] font-bold text-white">
-                            Subscribe
-                        </span>
-                    </div>
-
-                    <div className="flex items-center gap-1.5 text-[10px] font-semibold text-zinc-700">
-                        <span className="rounded-full bg-zinc-100 px-2.5 py-1">Like</span>
-                        <span className="rounded-full bg-zinc-100 px-2.5 py-1">Share</span>
-                        <span className="rounded-full bg-zinc-100 px-2.5 py-1">Save</span>
-                    </div>
-                </div>
-
-                <div className="rounded-xl bg-zinc-100 p-3">
-                    <div className="mb-1 flex flex-wrap items-center gap-2 text-[11px] font-bold text-zinc-900">
-                        <span>1M views</span>
-                        <span>9 months ago</span>
-                        <span>10 products</span>
+                <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-1 text-sm">
+                        <span className="font-bold text-zinc-950">Your Channel</span>
+                        <span className="text-zinc-500">6 months ago</span>
                     </div>
                     <div className={isExpanded ? textClassName : `${textClassName} line-clamp-2`}>
                         {previewText}
@@ -155,11 +115,33 @@ function YouTubePreview({ previewText, textClassName }: PreviewShellProps) {
                     <button
                         type="button"
                         onClick={() => setIsExpanded((current) => !current)}
-                        className="mt-1 text-[11px] font-semibold text-zinc-700"
+                        className="mt-1 text-xs font-semibold text-zinc-600"
                     >
-                        {isExpanded ? "Show less" : "...more"}
+                        {isExpanded ? "Show less" : "Read more"}
                     </button>
+
+                    <div className="mt-3">
+                        <PostImagePlaceholder />
+                    </div>
+
+                    <div className="mt-3 flex items-center gap-4 text-zinc-900">
+                        <button type="button" className="flex items-center gap-1 text-xs">
+                            <ThumbsUp className="size-5 stroke-[1.8]" />
+                            23
+                        </button>
+                        <button type="button">
+                            <ThumbsDown className="size-5 stroke-[1.8]" />
+                        </button>
+                        <button type="button">
+                            <Share2 className="size-5 stroke-[1.8]" />
+                        </button>
+                        <button type="button" className="flex items-center gap-1 text-xs">
+                            <MessageSquare className="size-5 stroke-[1.8]" />
+                            1
+                        </button>
+                    </div>
                 </div>
+                <MoreVertical className="size-5 shrink-0 text-zinc-900" />
             </div>
         </div>
     );
