@@ -6,6 +6,9 @@ type PlatformTabsProps = {
     outputs: FormattedOutput[];
     activePlatform: Platform;
     onPlatformChange: (platform: Platform) => void;
+    customPlatformText: Partial<Record<Platform, string>>;
+    onCustomPlatformTextChange: (platform: Platform, text: string) => void;
+    onCustomPlatformTextReset: (platform: Platform) => void;
 };
 
 const platformDotColors: Record<Platform, string> = {
@@ -16,7 +19,14 @@ const platformDotColors: Record<Platform, string> = {
     linkedin: "bg-[#0A66C2]",
 };
 
-function PlatformTabs({ outputs, activePlatform, onPlatformChange }: PlatformTabsProps) {
+function PlatformTabs({
+    outputs,
+    activePlatform,
+    onPlatformChange,
+    customPlatformText,
+    onCustomPlatformTextChange,
+    onCustomPlatformTextReset,
+}: PlatformTabsProps) {
     const activeOutput = outputs.find((output) => output.platform === activePlatform) ?? outputs[0];
 
     if (!activeOutput) {
@@ -57,6 +67,13 @@ function PlatformTabs({ outputs, activePlatform, onPlatformChange }: PlatformTab
                         characterCount={output.characterCount}
                         characterLimit={output.characterLimit}
                         isOverLimit={output.isOverLimit}
+                        customText={customPlatformText[output.platform]}
+                        onCustomTextChange={(text) =>
+                            onCustomPlatformTextChange(output.platform, text)
+                        }
+                        onCustomTextReset={() =>
+                            onCustomPlatformTextReset(output.platform)
+                        }
                     />
                 ) : null
             ))}

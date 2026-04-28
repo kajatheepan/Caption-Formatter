@@ -67,7 +67,7 @@ export function formatForPlatform(
     document: CaptionDocument
 ): FormattedOutput {
     const config = PLATFORM_CONFIG[platform];
-    const rawText = getRawTextForPlatform(platform, document);
+    const rawText = document.customPlatformText[platform] ?? getRawTextForPlatform(platform, document);
     const text = formatters[platform](rawText);
     const characterCount = text.length;
 

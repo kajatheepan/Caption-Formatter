@@ -90,6 +90,18 @@ function useCaptionDocument(initialDocument?: Partial<CaptionDocument>) {
         }));
     };
 
+    const resetCustomPlatformText = (platform: Platform) => {
+        setDocument((currentDocument) => {
+            const nextCustomPlatformText = { ...currentDocument.customPlatformText };
+            delete nextCustomPlatformText[platform];
+
+            return {
+                ...currentDocument,
+                customPlatformText: nextCustomPlatformText,
+            };
+        });
+    };
+
     const resetDocument = () => {
         setDocument(createDocument());
     };
@@ -107,6 +119,7 @@ function useCaptionDocument(initialDocument?: Partial<CaptionDocument>) {
         setHashtags,
         updateSettings,
         setCustomPlatformText,
+        resetCustomPlatformText,
         resetDocument,
         loadDocument,
     };

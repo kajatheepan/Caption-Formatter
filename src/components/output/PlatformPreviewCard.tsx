@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
     Instagram,
     Linkedin,
@@ -7,6 +8,7 @@ import {
     type LucideIcon,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
 import { PLATFORM_CONFIG } from "@/lib/constants";
 import type { Platform } from "@/types/platform";
 import CharacterCounter from "./CharacterCounter";
@@ -20,6 +22,9 @@ type PlatformPreviewCardProps = {
     characterCount: number;
     characterLimit: number;
     isOverLimit: boolean;
+    customText?: string;
+    onCustomTextChange: (text: string) => void;
+    onCustomTextReset: () => void;
 };
 
 const platformIcons: Record<Platform, LucideIcon> = {
@@ -45,9 +50,14 @@ function PlatformPreviewCard({
     characterCount,
     characterLimit,
     isOverLimit,
+    customText,
+    onCustomTextChange,
+    onCustomTextReset,
 }: PlatformPreviewCardProps) {
     const Icon = platformIcons[platform];
     const badge = PLATFORM_CONFIG[platform].badge;
+    const [isEditing, setIsEditing] = useState(false);
+    const hasCustomText = customText !== undefined;
 
     return (
         <Card className="w-full overflow-hidden rounded-[14px] shadow-md shadow-black/5 wrap-anywhere">
@@ -66,12 +76,25 @@ function PlatformPreviewCard({
                     </div>
 
                     <div className="flex flex-wrap items-center gap-3">
-                        <label className="flex items-center gap-2 text-xs font-medium text-zinc-400">
+                        <label className="flex items-center gap-2 text-xs font-semibold text-zinc-600">
                             Edit
-                            <span className="relative inline-flex h-5 w-9 items-center opacity-60">
-                                <input type="checkbox" disabled className="peer sr-only" />
-                                <span className="absolute inset-0 rounded-full bg-zinc-300" />
-                                <span className="absolute left-0.5 size-4 rounded-full bg-white shadow-sm" />
+                            <span className="relative inline-flex h-5 w-9 items-center">
+                                <input
+                                    type="checkbox"
+                                    checked={isEditing}
+                                    onChange={(event) => {
+                                        const nextIsEditing = event.target.checked;
+
+                                        if (nextIsEditing && !hasCustomText) {
+                                            onCustomTextChange(text);
+                                        }
+
+                                        setIsEditing(nextIsEditing);
+                                    }}
+                                    className="peer sr-only"
+                                />
+                                <span className="absolute inset-0 rounded-full bg-zinc-300 transition peer-checked:bg-primary" />
+                                <span className="absolute left-0.5 size-4 rounded-full bg-white shadow-sm transition peer-checked:translate-x-4" />
                             </span>
                         </label>
                         <CopyButton text={text} />
@@ -85,9 +108,48 @@ function PlatformPreviewCard({
                     limit={characterLimit}
                     isOverLimit={isOverLimit}
                 />
-                <div className="rounded-xl bg-[#f7f7f8] p-4">
-                    <PlatformPreview platform={platform} text={text} />
-                </div>
+                {isEditing ? (
+                    <div className="space-y-3 rounded-xl border bg-primary/5 p-3">
+                        <div className="flex items-center justify-between gap-3">
+                            <div>
+                                <p className="text-sm font-semibold text-zinc-800">
+                                    Editing {label}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                    This full text replaces the generated {label} output.
+                                </p>
+                            </div>
+                        </div>
+                        <Textarea
+                            value={customText ?? text}
+                            onChange={(event) => onCustomTextChange(event.target.value)}
+                            className="min-h-48 resize-y rounded-[10px] bg-white text-sm leading-6"
+                        />
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    onCustomTextReset();
+                                    setIsEditing(false);
+                                }}
+                                className="text-xs font-semibold text-primary"
+                            >
+                                Reset to auto
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setIsEditing(false)}
+                                className="rounded-lg bg-primary px-4 py-2 text-xs font-semibold text-white"
+                            >
+                                Done
+                            </button>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="rounded-xl bg-[#f7f7f8] p-4">
+                        <PlatformPreview platform={platform} text={text} />
+                    </div>
+                )}
             </CardContent>
         </Card>
     );

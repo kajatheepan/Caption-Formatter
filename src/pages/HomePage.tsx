@@ -41,6 +41,8 @@ function HomePage() {
         setFooter: setFooterState,
         setHashtags,
         updateSettings,
+        setCustomPlatformText,
+        resetCustomPlatformText,
         resetDocument,
     } = useCaptionDocument({
         caption: storedCaption,
@@ -102,7 +104,11 @@ function HomePage() {
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4 pt-0">
-                            <CaptionEditor value={document.caption} onChange={setCaptionState} />
+                            <CaptionEditor
+                                value={document.caption}
+                                onChange={setCaptionState}
+                                onClear={() => setCaptionState("")}
+                            />
                             <FooterInput value={document.footer} onChange={setFooterState} />
                             {showCleanFormatting && (
                                 <div className="flex items-center justify-between gap-3 rounded-xl border bg-primary/5 px-3 py-3">
@@ -158,6 +164,9 @@ function HomePage() {
                         outputs={outputs}
                         activePlatform={activePlatform}
                         onPlatformChange={setActivePlatform}
+                        customPlatformText={document.customPlatformText}
+                        onCustomPlatformTextChange={setCustomPlatformText}
+                        onCustomPlatformTextReset={resetCustomPlatformText}
                     />
                 </section>
             </div>

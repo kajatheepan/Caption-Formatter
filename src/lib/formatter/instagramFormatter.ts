@@ -1,6 +1,5 @@
 import type { CaptionDocument } from "@/types/caption";
 import { cleanHashtags } from "@/lib/hashtags/cleanHashtags";
-import { getPlatformCaption } from "./getPlatformCaption";
 
 function joinParts(parts: string[]) {
     return parts.filter((part) => part.trim()).join("\n\n");
@@ -17,8 +16,7 @@ function cleanPlainCaption(input: string) {
 }
 
 export function formatInstagramCaption(document: CaptionDocument) {
-    const caption = getPlatformCaption(document, "instagram");
-    const parts = [caption];
+    const parts = [document.caption];
 
     if (document.settings.includeFooter) {
         parts.push(document.footer);
