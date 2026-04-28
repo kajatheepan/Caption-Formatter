@@ -57,7 +57,6 @@ function PlatformPreviewCard({
     const Icon = platformIcons[platform];
     const badge = PLATFORM_CONFIG[platform].badge;
     const [isEditing, setIsEditing] = useState(false);
-    const hasCustomText = customText !== undefined;
 
     return (
         <Card className="w-full overflow-hidden rounded-[14px] shadow-md shadow-black/5 wrap-anywhere">
@@ -82,15 +81,7 @@ function PlatformPreviewCard({
                                 <input
                                     type="checkbox"
                                     checked={isEditing}
-                                    onChange={(event) => {
-                                        const nextIsEditing = event.target.checked;
-
-                                        if (nextIsEditing && !hasCustomText) {
-                                            onCustomTextChange(text);
-                                        }
-
-                                        setIsEditing(nextIsEditing);
-                                    }}
+                                    onChange={(event) => setIsEditing(event.target.checked)}
                                     className="peer sr-only"
                                 />
                                 <span className="absolute inset-0 rounded-full bg-zinc-300 transition peer-checked:bg-primary" />
