@@ -56,6 +56,32 @@ function WhatsAppPreview({ previewText, textClassName }: PreviewShellProps) {
     );
 }
 
+function TelegramPreview({ previewText, textClassName }: PreviewShellProps) {
+    return (
+        <div className="overflow-hidden rounded-[10px] bg-[#d8edf8]">
+            <div className="flex items-center gap-3 bg-white px-4 py-2.5 shadow-sm">
+                <div className="grid size-9 place-items-center rounded-full bg-[#2AABEE] text-xs font-bold text-white">
+                    CF
+                </div>
+                <div>
+                    <div className="text-sm font-bold text-zinc-900">Your Channel</div>
+                    <div className="text-[10px] text-zinc-500">1.2M subscribers</div>
+                </div>
+            </div>
+            <div className="min-h-28 p-4">
+                <div className="max-w-[92%] rounded-2xl rounded-tl-sm bg-white px-4 py-3 shadow-sm">
+                    <div className={textClassName}>{previewText}</div>
+                    <div className="mt-2 flex items-center justify-end gap-2 text-[10px] text-zinc-400">
+                        <span>1.4K views</span>
+                        <span>05:38</span>
+                        <span className="text-[#2AABEE]">✓</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 function PlatformPreview({ platform, text }: PlatformPreviewProps) {
     const previewText = text || EMPTY_PREVIEW_TEXT;
     const textClassName = text
@@ -64,6 +90,10 @@ function PlatformPreview({ platform, text }: PlatformPreviewProps) {
 
     if (platform === "whatsapp") {
         return <WhatsAppPreview previewText={previewText} textClassName={textClassName} />;
+    }
+
+    if (platform === "telegram") {
+        return <TelegramPreview previewText={previewText} textClassName={textClassName} />;
     }
 
     if (platform === "instagram") {
