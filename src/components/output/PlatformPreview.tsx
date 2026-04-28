@@ -27,6 +27,35 @@ function splitInstagramHashtags(text: string) {
     };
 }
 
+type PreviewShellProps = {
+    previewText: string;
+    textClassName: string;
+};
+
+function WhatsAppPreview({ previewText, textClassName }: PreviewShellProps) {
+    return (
+        <div className="overflow-hidden rounded-[10px] bg-[#e9dfd2]">
+            <div className="flex items-center gap-3 bg-[#0b6b5c] px-4 py-2.5 text-white">
+                <div className="grid size-8 place-items-center rounded-full bg-[#25D366] text-xs font-bold">
+                    Y
+                </div>
+                <div>
+                    <div className="text-sm font-bold">You</div>
+                    <div className="text-[10px] text-white/75">online</div>
+                </div>
+            </div>
+            <div className="min-h-24 p-3">
+                <div className="inline-block max-w-[90%] rounded-r-xl rounded-bl-xl bg-white px-3 py-2 shadow-sm">
+                    <div className={textClassName}>{previewText}</div>
+                    <div className="mt-1 text-right text-[10px] text-zinc-400">
+                        05:38 <span className="text-sky-400">✓✓</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 function PlatformPreview({ platform, text }: PlatformPreviewProps) {
     const previewText = text || EMPTY_PREVIEW_TEXT;
     const textClassName = text
@@ -34,27 +63,7 @@ function PlatformPreview({ platform, text }: PlatformPreviewProps) {
         : "whitespace-pre-wrap break-words text-xs italic leading-5 text-zinc-400";
 
     if (platform === "whatsapp") {
-        return (
-            <div className="overflow-hidden rounded-[10px] bg-[#e9dfd2]">
-                <div className="flex items-center gap-3 bg-[#0b6b5c] px-4 py-2.5 text-white">
-                    <div className="grid size-8 place-items-center rounded-full bg-[#25D366] text-xs font-bold">
-                        Y
-                    </div>
-                    <div>
-                        <div className="text-sm font-bold">You</div>
-                        <div className="text-[10px] text-white/75">online</div>
-                    </div>
-                </div>
-                <div className="min-h-24 p-3">
-                    <div className="inline-block max-w-[90%] rounded-r-xl rounded-bl-xl bg-white px-3 py-2 shadow-sm">
-                        <div className={textClassName}>{previewText}</div>
-                        <div className="mt-1 text-right text-[10px] text-zinc-400">
-                            05:38 <span className="text-sky-400">✓✓</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
+        return <WhatsAppPreview previewText={previewText} textClassName={textClassName} />;
     }
 
     if (platform === "instagram") {
