@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Sparkles } from "lucide-react";
 import AppLayout from "@/components/layout/AppLayout";
 import FooterInput from "@/components/inputs/FooterInput";
@@ -12,59 +12,12 @@ import { formatAllPlatforms } from "@/lib/formatter";
 import { cleanText } from "@/lib/formatter/cleanText";
 import { cleanHashtags } from "@/lib/hashtags/cleanHashtags";
 import useClipboard from "@/hooks/useClipboard";
-import { useLocalStorage } from "@/hooks/useLocalDraft";
+import useLocalDraft from "@/hooks/useLocalDraft";
 import useCaptionDocument from "@/hooks/useCaptionDocument";
-import type { CaptionDocument } from "@/types/caption";
 import type { Platform } from "@/types/platform";
 
-const defaultSettings: CaptionDocument["settings"] = {
-    includeFooter: true,
-    attachHashtags: false,
-    optimizeForPlatform: true,
-    previewMode: true,
-};
-
-function parseStoredHashtags(value: string) {
-    try {
-        const parsedValue = JSON.parse(value);
-        return Array.isArray(parsedValue)
-            ? parsedValue.filter((item): item is string => typeof item === "string")
-            : [];
-    } catch {
-        return [];
-    }
-}
-
-function parseStoredSettings(value: string): CaptionDocument["settings"] {
-    try {
-        const parsedValue = JSON.parse(value) as Partial<CaptionDocument["settings"]>;
-
-        return {
-            ...defaultSettings,
-            ...parsedValue,
-        };
-    } catch {
-        return defaultSettings;
-    }
-}
-
-function debounce<T extends (...args: string[]) => void>(func: T, delay: number) {
-    let timer: ReturnType<typeof setTimeout>;
-
-    return (...args: Parameters<T>) => {
-        clearTimeout(timer);
-        timer = setTimeout(() => func(...args), delay);
-    };
-}
-
 function HomePage() {
-    const { value: storedCaption, setStoredValue: setCaption } = useLocalStorage("caption", "");
-    const { value: storedFooter, setStoredValue: setFooter } = useLocalStorage("footer", "");
-    const { value: storedHashtags, setStoredValue: setStoredHashtags } = useLocalStorage("hashtags", "[]");
-    const { value: storedSettings, setStoredValue: setStoredSettings } = useLocalStorage(
-        "settings",
-        JSON.stringify(defaultSettings)
-    );
+    const { draftDocument, saveDraft, clearDraft } = useLocalDraft();
     const [activePlatform, setActivePlatform] = useState<Platform>("whatsapp");
     const {
         copy: copyAll,
@@ -81,45 +34,18 @@ function HomePage() {
         setCustomPlatformText,
         resetCustomPlatformText,
         resetDocument,
-    } = useCaptionDocument({
-        caption: storedCaption,
-        footer: storedFooter,
-        hashtags: parseStoredHashtags(storedHashtags),
-        settings: parseStoredSettings(storedSettings),
-    });
+    } = useCaptionDocument(draftDocument);
 
     const outputs = formatAllPlatforms(document);
     const showCleanFormatting = Boolean(document.caption.trim() || document.footer.trim());
 
-    const debouncedSetCaption = useRef(
-        debounce((value: string) => setCaption(value), 1000)
-    ).current;
-    const debouncedSetFooter = useRef(
-        debounce((value: string) => setFooter(value), 1000)
-    ).current;
-
     useEffect(() => {
-        debouncedSetCaption(document.caption);
-    }, [document.caption, debouncedSetCaption]);
-
-    useEffect(() => {
-        debouncedSetFooter(document.footer);
-    }, [document.footer, debouncedSetFooter]);
-
-    useEffect(() => {
-        setStoredHashtags(JSON.stringify(document.hashtags));
-    }, [document.hashtags, setStoredHashtags]);
-
-    useEffect(() => {
-        setStoredSettings(JSON.stringify(document.settings));
-    }, [document.settings, setStoredSettings]);
+        saveDraft(document);
+    }, [document, saveDraft]);
 
     const handleClear = () => {
         resetDocument();
-        setCaption("");
-        setFooter("");
-        setStoredHashtags("[]");
-        setStoredSettings(JSON.stringify(defaultSettings));
+        clearDraft();
     };
 
     const handleCopyAll = () => {

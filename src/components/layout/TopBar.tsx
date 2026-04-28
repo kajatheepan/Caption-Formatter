@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { ArrowDown, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { APP_NAME } from "@/lib/constants";
@@ -17,6 +18,8 @@ function TopBar({
     copyAllCopied = false,
     copyAllError = false,
 }: TopBarProps) {
+    const [isClearDialogOpen, setIsClearDialogOpen] = useState(false);
+
     void saveStatus;
 
     return (
@@ -30,7 +33,12 @@ function TopBar({
                 </div>
 
                 <div className="flex gap-2">
-                    <Button variant="outline" size="sm" onClick={onClear} className="h-8 px-4">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setIsClearDialogOpen(true)}
+                        className="h-8 px-4"
+                    >
                         Clear
                     </Button>
                     <Button size="sm" onClick={onCopyAll} className="h-8 bg-primary px-4 shadow-sm">
@@ -42,6 +50,36 @@ function TopBar({
                     )}
                 </div>
             </div>
+            {isClearDialogOpen && (
+                <div className="fixed inset-0 z-50 grid place-items-center bg-black/30 px-4">
+                    <div className="w-full max-w-sm rounded-xl border bg-white p-5 shadow-xl">
+                        <h2 className="text-base font-bold text-zinc-950">Clear draft?</h2>
+                        <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                            This will remove your caption, footer, hashtags, settings, and custom platform edits from this browser.
+                        </p>
+                        <div className="mt-5 flex justify-end gap-2">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setIsClearDialogOpen(false)}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                type="button"
+                                size="sm"
+                                onClick={() => {
+                                    onClear();
+                                    setIsClearDialogOpen(false);
+                                }}
+                            >
+                                Clear draft
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </header>
     );
 }
