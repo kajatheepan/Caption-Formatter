@@ -21,11 +21,6 @@ export const PLATFORM_CONFIG = {
         limit: 2200,
         badge: "Structured",
     },
-    twitter: {
-        label: "X / Twitter",
-        limit: 280,
-        badge: "Plain Text",
-    },
     linkedin: {
         label: "LinkedIn",
         limit: 3000,

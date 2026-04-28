@@ -13,7 +13,6 @@ const platformDotColors: Record<Platform, string> = {
     telegram: "bg-[#2AABEE]",
     youtube: "bg-[#FF0000]",
     instagram: "bg-[#E6683C]",
-    twitter: "bg-black",
     linkedin: "bg-[#0A66C2]",
 };
 

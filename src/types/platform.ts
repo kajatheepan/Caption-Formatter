@@ -3,5 +3,4 @@ export type Platform =
     | "telegram"
     | "youtube"
     | "instagram"
-    | "twitter"
     | "linkedin";

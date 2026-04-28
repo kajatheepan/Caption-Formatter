@@ -5,7 +5,6 @@ import type { FormattedOutput } from "./types";
 import { formatInstagramCaption, InstagramFormatter } from "./instagramFormatter";
 import { formatLinkedinCaption, LinkedinFormatter } from "./linkedinFormatter";
 import { formatTelegramCaption, TelegramFormatter } from "./telegramFormatter";
-import { formatTwitterCaption, TwitterFormatter } from "./twitterFormatter";
 import { formatWhatsappCaption, WhatsappFormatter } from "./whatsappFormatter";
 import { formatYoutubeCaption, YoutubeFormatter } from "./youtubeFormatter";
 
@@ -13,7 +12,6 @@ export { TelegramFormatter } from "./telegramFormatter";
 export { YoutubeFormatter } from "./youtubeFormatter";
 export { WhatsappFormatter } from "./whatsappFormatter";
 export { InstagramFormatter } from "./instagramFormatter";
-export { TwitterFormatter } from "./twitterFormatter";
 export { LinkedinFormatter } from "./linkedinFormatter";
 
 const formatters: Record<Platform, (input: string) => string> = {
@@ -21,7 +19,6 @@ const formatters: Record<Platform, (input: string) => string> = {
     telegram: TelegramFormatter,
     youtube: YoutubeFormatter,
     instagram: InstagramFormatter,
-    twitter: TwitterFormatter,
     linkedin: LinkedinFormatter,
 };
 
@@ -30,7 +27,6 @@ const allPlatforms: Platform[] = [
     "telegram",
     "youtube",
     "instagram",
-    "twitter",
     "linkedin",
 ];
 
@@ -57,10 +53,6 @@ function getRawTextForPlatform(platform: Platform, document: CaptionDocument) {
 
     if (platform === "instagram") {
         return formatInstagramCaption(document);
-    }
-
-    if (platform === "twitter") {
-        return formatTwitterCaption(document);
     }
 
     if (platform === "linkedin") {

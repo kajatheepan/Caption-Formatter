@@ -50,7 +50,6 @@ This project should not be just a text formatter. It should feel like a lightwei
 - Bold/italic/list controls
 - Editor JSON storage
 - Instagram output
-- X/Twitter output
 - LinkedIn output
 - Character count
 - Platform-style preview UI
@@ -212,7 +211,6 @@ The app should generate formatted captions for these platforms:
 - Telegram
 - YouTube
 - Instagram
-- X / Twitter
 - LinkedIn
 
 Each platform output should include:
@@ -330,29 +328,6 @@ Follow for more.
 
 ---
 
-### X / Twitter
-
-X/Twitter captions should be short and plain text.
-
-#### Rules
-
-- Remove markdown
-- Respect 280 character limit
-- Show warning if over limit
-- Hashtags allowed but should be limited
-
-#### Output Example
-
-```text
-Big update today.
-
-This is important.
-
-#update
-```
-
----
-
 ### LinkedIn
 
 LinkedIn captions should be structured and professional.
@@ -396,7 +371,6 @@ Each platform output should show character usage.
 | Telegram | 4,096 |
 | YouTube | 5,000 |
 | Instagram | 2,200 |
-| X / Twitter | 280 |
 | LinkedIn | 3,000 |
 
 ### Warning Rules
@@ -441,12 +415,6 @@ The app should not only show plain output. It should preview how captions may lo
 - Caption section
 - Hashtags visually separated
 
-#### X / Twitter
-
-- Tweet layout
-- Username/handle
-- Engagement row
-
 #### LinkedIn
 
 - Professional post layout
@@ -485,9 +453,6 @@ Copied!
 ...
 
 === Instagram ===
-...
-
-=== X / Twitter ===
 ...
 
 === LinkedIn ===
@@ -654,7 +619,6 @@ export type CaptionDocument = {
     telegram?: string;
     youtube?: string;
     instagram?: string;
-    twitter?: string;
     linkedin?: string;
   };
   settings: {
@@ -786,7 +750,6 @@ src/
       telegramFormatter.ts
       youtubeFormatter.ts
       instagramFormatter.ts
-      twitterFormatter.ts
       linkedinFormatter.ts
 
     hashtags/
@@ -838,7 +801,6 @@ export type Platform =
   | "telegram"
   | "youtube"
   | "instagram"
-  | "twitter"
   | "linkedin";
 ```
 
@@ -1099,7 +1061,6 @@ Goal: Support all MVP platforms.
 Tasks:
 
 - Add Instagram output
-- Add X/Twitter output
 - Add LinkedIn output
 - Add platform constants
 - Add platform limits
@@ -1184,7 +1145,6 @@ Tasks:
 - Telegram preview
 - YouTube preview
 - Instagram preview
-- X/Twitter preview
 - LinkedIn preview
 
 Estimated time:
@@ -1452,7 +1412,6 @@ fix: stabilize current build
 feat: add split workspace layout
 feat: add platform tabs
 feat: add instagram formatter
-feat: add twitter formatter
 feat: add linkedin formatter
 feat: add footer toggle
 feat: add hashtag input

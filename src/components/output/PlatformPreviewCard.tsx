@@ -4,7 +4,6 @@ import {
     MessageCircle,
     Play,
     Send,
-    Twitter,
     type LucideIcon,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,7 +27,6 @@ const platformIcons: Record<Platform, LucideIcon> = {
     telegram: Send,
     youtube: Play,
     instagram: Instagram,
-    twitter: Twitter,
     linkedin: Linkedin,
 };
 
@@ -37,7 +35,6 @@ const platformIconClassNames: Record<Platform, string> = {
     telegram: "bg-[#2AABEE]/10 text-[#2AABEE]",
     youtube: "bg-[#FF0000]/10 text-[#FF0000]",
     instagram: "bg-[#E6683C]/10 text-[#C13584]",
-    twitter: "bg-black/10 text-black",
     linkedin: "bg-[#0A66C2]/10 text-[#0A66C2]",
 };
 

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Bookmark, Heart, MessageCircle, Send } from "lucide-react";
 import type { Platform } from "@/types/platform";
 
 type PlatformPreviewProps = {
@@ -165,19 +166,38 @@ function InstagramPreview({ text, previewText }: InstagramPreviewProps) {
 
     return (
         <div className="overflow-hidden rounded-[10px] border bg-white">
-            <div className="flex items-center gap-2 border-b px-3 py-2">
-                <div className="grid size-8 place-items-center rounded-full bg-gradient-to-br from-orange-400 via-pink-500 to-purple-700 text-xs text-white">
-                    IG
+            <div className="flex items-center gap-2 px-3 py-3">
+                <div className="rounded-full bg-gradient-to-br from-yellow-400 via-pink-500 to-purple-700 p-0.5">
+                    <div className="grid size-9 place-items-center rounded-full bg-zinc-900 text-xs font-bold text-white">
+                        CF
+                    </div>
                 </div>
-                <span className="text-sm font-bold">your_handle</span>
-                <span className="ml-auto text-xs font-semibold text-sky-500">Follow</span>
+                <span className="text-sm font-bold">captionforge</span>
+                <span className="text-sm text-sky-500">●</span>
+                <span className="text-sm text-zinc-500">3h</span>
+                <span className="ml-auto text-lg font-bold leading-none">...</span>
             </div>
-            <div className="grid aspect-square place-items-center bg-gradient-to-br from-indigo-400 to-purple-600 text-3xl">
-                +
+
+            <div className="relative mx-3 aspect-square overflow-hidden rounded-md border bg-zinc-50">
+                <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-zinc-100 via-zinc-50 to-zinc-200" />
+                <div className="absolute inset-10 rounded-2xl border border-dashed border-zinc-300 bg-white/60" />
+                <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-3 text-zinc-400">
+                    <div className="size-12 rounded-full border-4 border-zinc-200 border-t-zinc-400" />
+                    <div className="text-xs font-semibold">Post image preview</div>
+                </div>
             </div>
-            <div className="space-y-2 px-3 py-3 text-[13px] leading-5">
+
+            <div className="flex items-center gap-4 px-3 py-3 text-zinc-950">
+                <Heart className="size-6 stroke-[1.8]" />
+                <MessageCircle className="size-6 stroke-[1.8]" />
+                <Send className="size-6 stroke-[1.8]" />
+                <Bookmark className="ml-auto size-6 stroke-[1.8]" />
+            </div>
+            <div className="px-3 text-sm font-semibold">592 likes</div>
+
+            <div className="space-y-2 px-3 pb-4 pt-2 text-[13px] leading-5">
                 <p className={text ? "whitespace-pre-wrap break-words" : "italic text-zinc-400"}>
-                    <span className="font-bold not-italic text-zinc-900">your_handle </span>
+                    <span className="font-bold not-italic text-zinc-900">captionforge </span>
                     {text ? instagramText.body || instagramText.hashtags : previewText}
                 </p>
                 {instagramText.body && instagramText.hashtags && (
@@ -185,7 +205,6 @@ function InstagramPreview({ text, previewText }: InstagramPreviewProps) {
                         {instagramText.hashtags}
                     </p>
                 )}
-                <p className="text-xs text-zinc-400">View all 42 comments</p>
             </div>
         </div>
     );
