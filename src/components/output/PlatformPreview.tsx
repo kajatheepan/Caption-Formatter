@@ -82,6 +82,31 @@ function TelegramPreview({ previewText, textClassName }: PreviewShellProps) {
     );
 }
 
+function YouTubePreview({ previewText, textClassName }: PreviewShellProps) {
+    return (
+        <div className="overflow-hidden rounded-[10px] border bg-white">
+            <div className="grid aspect-video place-items-center bg-zinc-900 text-white">
+                <div className="grid size-12 place-items-center rounded-full bg-red-600 text-lg font-bold">
+                    ▶
+                </div>
+            </div>
+            <div className="space-y-3 p-4">
+                <div>
+                    <div className="h-4 w-4/5 rounded bg-zinc-900" />
+                    <div className="mt-2 h-3 w-2/5 rounded bg-zinc-200" />
+                </div>
+                <div className="rounded-xl bg-zinc-100 p-3">
+                    <div className="mb-2 flex items-center justify-between">
+                        <span className="text-xs font-bold text-zinc-900">Description</span>
+                        <span className="text-xs font-semibold text-zinc-500">Show more</span>
+                    </div>
+                    <div className={textClassName}>{previewText}</div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 function PlatformPreview({ platform, text }: PlatformPreviewProps) {
     const previewText = text || EMPTY_PREVIEW_TEXT;
     const textClassName = text
@@ -94,6 +119,10 @@ function PlatformPreview({ platform, text }: PlatformPreviewProps) {
 
     if (platform === "telegram") {
         return <TelegramPreview previewText={previewText} textClassName={textClassName} />;
+    }
+
+    if (platform === "youtube") {
+        return <YouTubePreview previewText={previewText} textClassName={textClassName} />;
     }
 
     if (platform === "instagram") {
