@@ -1,5 +1,6 @@
 import type { CaptionDocument } from "@/types/caption";
 import { cleanHashtags } from "@/lib/hashtags/cleanHashtags";
+import { getPlatformCaption } from "./getPlatformCaption";
 
 function joinParts(parts: string[]) {
     return parts.filter((part) => part.trim()).join("\n\n");
@@ -16,7 +17,7 @@ function cleanPlainText(input: string) {
 }
 
 export function formatLinkedinCaption(document: CaptionDocument) {
-    const caption = document.customPlatformText.linkedin ?? document.caption;
+    const caption = getPlatformCaption(document, "linkedin");
     const parts = [caption];
 
     if (document.settings.includeFooter) {

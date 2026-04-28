@@ -1,12 +1,13 @@
 import type { CaptionDocument } from "@/types/caption";
 import { cleanHashtags } from "@/lib/hashtags/cleanHashtags";
+import { getPlatformCaption } from "./getPlatformCaption";
 
 function joinParts(parts: string[]) {
     return parts.filter((part) => part.trim()).join("\n\n");
 }
 
 export function formatWhatsappCaption(document: CaptionDocument) {
-    const caption = document.customPlatformText.whatsapp ?? document.caption;
+    const caption = getPlatformCaption(document, "whatsapp");
     const parts = [caption];
 
     if (document.settings.includeFooter) {
