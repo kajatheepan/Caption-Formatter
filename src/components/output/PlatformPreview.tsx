@@ -45,6 +45,93 @@ type PreviewShellProps = {
     textClassName: string;
 };
 
+type TextFormatting = "whatsapp" | "telegram" | "plain";
+
+type InlineToken = {
+    text: string;
+    style?: "bold" | "italic" | "strike";
+};
+
+function parseInlineFormatting(text: string, formatting: TextFormatting): InlineToken[] {
+    if (formatting === "plain") {
+        return [{ text }];
+    }
+
+    const tokens: InlineToken[] = [];
+    const pattern = formatting === "telegram"
+        ? /(\*\*([^*\n]+)\*\*|__([^_\n]+)__|~([^~\n]+)~)/g
+        : /(\*([^*\n]+)\*|_([^_\n]+)_|~([^~\n]+)~)/g;
+    let lastIndex = 0;
+    let match: RegExpExecArray | null;
+
+    while ((match = pattern.exec(text)) !== null) {
+        if (match.index > lastIndex) {
+            tokens.push({ text: text.slice(lastIndex, match.index) });
+        }
+
+        if (match[2]) {
+            tokens.push({ text: match[2], style: "bold" });
+        } else if (match[3]) {
+            tokens.push({ text: match[3], style: "italic" });
+        } else if (match[4]) {
+            tokens.push({ text: match[4], style: "strike" });
+        }
+
+        lastIndex = pattern.lastIndex;
+    }
+
+    if (lastIndex < text.length) {
+        tokens.push({ text: text.slice(lastIndex) });
+    }
+
+    return tokens;
+}
+
+function renderInlineToken(token: InlineToken, key: string) {
+    if (token.style === "bold") {
+        return <strong key={key}>{token.text}</strong>;
+    }
+
+    if (token.style === "italic") {
+        return <em key={key}>{token.text}</em>;
+    }
+
+    if (token.style === "strike") {
+        return <span key={key} className="line-through">{token.text}</span>;
+    }
+
+    return <span key={key}>{token.text}</span>;
+}
+
+function renderPreviewLines(text: string, formatting: TextFormatting) {
+    const lines = text.split("\n");
+
+    return lines.map((line, lineIndex) => {
+        const inlineNodes = parseInlineFormatting(line, formatting).map((token, tokenIndex) =>
+            renderInlineToken(token, `${lineIndex}-${tokenIndex}`)
+        );
+
+        return (
+            <span key={lineIndex}>
+                {inlineNodes}
+                {lineIndex < lines.length - 1 ? <br /> : null}
+            </span>
+        );
+    });
+}
+
+function PreviewText({
+    children,
+    className,
+    formatting,
+}: {
+    children: string;
+    className: string;
+    formatting: TextFormatting;
+}) {
+    return <div className={className}>{renderPreviewLines(children, formatting)}</div>;
+}
+
 function WhatsAppPreview({ previewText, textClassName }: PreviewShellProps) {
     return (
         <div className="overflow-hidden rounded-[10px] bg-[#e9dfd2]">
@@ -59,7 +146,9 @@ function WhatsAppPreview({ previewText, textClassName }: PreviewShellProps) {
             </div>
             <div className="min-h-24 p-3">
                 <div className="inline-block max-w-[90%] rounded-r-xl rounded-bl-xl bg-white px-3 py-2 shadow-sm">
-                    <div className={textClassName}>{previewText}</div>
+                    <PreviewText className={textClassName} formatting="whatsapp">
+                        {previewText}
+                    </PreviewText>
                     <div className="mt-1 text-right text-[10px] text-zinc-400">
                         05:38 <span className="text-sky-400">✓✓</span>
                     </div>
@@ -83,7 +172,9 @@ function TelegramPreview({ previewText, textClassName }: PreviewShellProps) {
             </div>
             <div className="min-h-28 p-4">
                 <div className="max-w-[92%] rounded-2xl rounded-tl-sm bg-white px-4 py-3 shadow-sm">
-                    <div className={textClassName}>{previewText}</div>
+                    <PreviewText className={textClassName} formatting="telegram">
+                        {previewText}
+                    </PreviewText>
                     <div className="mt-2 flex items-center justify-end gap-2 text-[10px] text-zinc-400">
                         <span>1.4K views</span>
                         <span>05:38</span>
@@ -109,9 +200,12 @@ function YouTubePreview({ previewText, textClassName }: PreviewShellProps) {
                         <span className="font-bold text-zinc-950">Your Channel</span>
                         <span className="text-zinc-500">6 months ago</span>
                     </div>
-                    <div className={isExpanded ? textClassName : `${textClassName} line-clamp-2`}>
+                    <PreviewText
+                        className={isExpanded ? textClassName : `${textClassName} line-clamp-2`}
+                        formatting="plain"
+                    >
                         {previewText}
-                    </div>
+                    </PreviewText>
                     <button
                         type="button"
                         onClick={() => setIsExpanded((current) => !current)}
@@ -226,9 +320,12 @@ function LinkedInPreview({ previewText, textClassName }: PreviewShellProps) {
             </div>
 
             <div className="space-y-2 px-4 pb-3 text-[13px] leading-5">
-                <div className={isExpanded ? textClassName : `${textClassName} line-clamp-3`}>
+                <PreviewText
+                    className={isExpanded ? textClassName : `${textClassName} line-clamp-3`}
+                    formatting="plain"
+                >
                     {previewText}
-                </div>
+                </PreviewText>
                 <button
                     type="button"
                     onClick={() => setIsExpanded((current) => !current)}
