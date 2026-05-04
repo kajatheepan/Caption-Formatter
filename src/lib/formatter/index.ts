@@ -209,7 +209,7 @@ export function formatForPlatform(
         ? { text: document.customPlatformText[platform] ?? "", html: undefined, formattingNotices: [] }
         : getRawTextForPlatform(platform, document);
     const rawText = formatted.text;
-    const text = hasCustomPlatformText(platform, document) || document.editorContent
+    const text = hasCustomPlatformContent(platform, document) || hasCustomPlatformText(platform, document) || document.editorContent
         ? rawText
         : formatters[platform](rawText);
     const characterCount = text.length;
