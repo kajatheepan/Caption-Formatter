@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { JSONContent } from "@tiptap/core";
 import {
     Instagram,
     Linkedin,
@@ -8,13 +9,14 @@ import {
     type LucideIcon,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
 import { PLATFORM_CONFIG } from "@/lib/constants";
 import type { Platform } from "@/types/platform";
 import CharacterCounter from "./CharacterCounter";
 import CopyButton from "./CopyButton";
 import PlatformPreview from "./PlatformPreview";
 import type { FormattingNotice } from "@/lib/formatter/rich-text/formattingPolicy";
+import RichCaptionEditor from "@/components/editor/RichCaptionEditor";
+import { parseMarkdownToRichText } from "@/lib/formatter/rich-text/markdownParser";
 
 type PlatformPreviewCardProps = {
     platform: Platform;
@@ -25,8 +27,10 @@ type PlatformPreviewCardProps = {
     characterLimit: number;
     isOverLimit: boolean;
     customText?: string;
+    customContent?: JSONContent | null;
     formattingNotices?: FormattingNotice[];
     onCustomTextChange: (text: string) => void;
+    onCustomContentChange: (content: JSONContent | null) => void;
     onCustomTextReset: () => void;
 };
 
@@ -55,13 +59,18 @@ function PlatformPreviewCard({
     characterLimit,
     isOverLimit,
     customText,
+    customContent,
     formattingNotices = [],
     onCustomTextChange,
+    onCustomContentChange,
     onCustomTextReset,
 }: PlatformPreviewCardProps) {
     const Icon = platformIcons[platform];
     const badge = PLATFORM_CONFIG[platform].badge;
     const [isEditing, setIsEditing] = useState(false);
+    const platformFormatting = platform === "whatsapp" ? "whatsapp" : platform === "telegram" ? "telegram" : "plain";
+    const initialEditorContent = customContent ?? parseMarkdownToRichText(customText ?? text, platformFormatting);
+    const previewText = customText ?? text;
 
     return (
         <Card className="w-full overflow-hidden rounded-[14px] shadow-md shadow-black/5 wrap-anywhere">
@@ -134,15 +143,38 @@ function PlatformPreviewCard({
                                     Editing {label}
                                 </p>
                                 <p className="text-xs text-muted-foreground">
-                                    This full text replaces the generated {label} output.
+                                    Rich text edits replace the generated {label} output.
                                 </p>
                             </div>
                         </div>
-                        <Textarea
-                            value={customText ?? text}
-                            onChange={(event) => onCustomTextChange(event.target.value)}
-                            className="min-h-48 resize-y rounded-[10px] bg-white text-sm leading-6"
-                        />
+                        <div className="grid gap-3 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+                            <div className="rounded-[10px] border bg-white p-3">
+                                <RichCaptionEditor
+                                    value={previewText}
+                                    editorContent={customContent ?? initialEditorContent}
+                                    onChange={(nextText) => onCustomTextChange(nextText)}
+                                    onEditorContentChange={(nextContent) => onCustomContentChange(nextContent)}
+                                    onClear={() => {
+                                        onCustomTextReset();
+                                        setIsEditing(false);
+                                    }}
+                                    showHeader={false}
+                                />
+                            </div>
+                            <div className="rounded-[10px] border bg-[#f7f7f8] p-3">
+                                <div className="mb-2 flex items-center justify-between">
+                                    <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-zinc-500">
+                                        Live preview
+                                    </p>
+                                    <p className="text-[11px] text-zinc-400">{label}</p>
+                                </div>
+                                <PlatformPreview
+                                    platform={platform}
+                                    text={previewText}
+                                    editorContent={customContent ?? initialEditorContent}
+                                />
+                            </div>
+                        </div>
                         <div className="flex flex-wrap items-center gap-3">
                             <button
                                 type="button"
@@ -158,7 +190,7 @@ function PlatformPreviewCard({
                     </div>
                 ) : (
                     <div className="rounded-xl bg-[#f7f7f8] p-4">
-                        <PlatformPreview platform={platform} text={text} />
+                        <PlatformPreview platform={platform} text={previewText} editorContent={customContent ?? null} />
                     </div>
                 )}
             </CardContent>

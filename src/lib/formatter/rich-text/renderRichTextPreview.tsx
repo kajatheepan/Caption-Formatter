@@ -121,6 +121,16 @@ function renderNode(node: JSONContent, key: string): ReactNode {
     return <span key={key}>{renderInlineContent(node, key)}</span>;
 }
 
+export function renderRichTextContentPreview(content: JSONContent, formatting: PlatformFormatting) {
+    const nodes = content.content?.length ? content.content : [{ type: "paragraph", content: [] }];
+
+    return (
+        <div className="space-y-1">
+            {nodes.map((node, index) => renderNode(node, `${formatting}-preview-${index}`))}
+        </div>
+    );
+}
+
 function renderTelegramComposerPreview(text: string) {
     const lines = text.split("\n");
 
@@ -145,11 +155,5 @@ export function renderRichTextPreview(text: string, formatting: PlatformFormatti
     }
 
     const doc = parseMarkdownToRichText(text, formatting);
-    const blocks = doc.content?.length ? doc.content : [{ type: "paragraph", content: [] }];
-
-    return (
-        <div className="space-y-1">
-            {blocks.map((node, index) => renderNode(node, `preview-${index}`))}
-        </div>
-    );
+    return renderRichTextContentPreview(doc, formatting);
 }

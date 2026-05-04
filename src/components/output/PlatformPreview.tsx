@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { JSONContent } from "@tiptap/core";
 import {
     Bookmark,
     Heart,
@@ -12,12 +13,13 @@ import {
     ThumbsUp,
 } from "lucide-react";
 import type { Platform } from "@/types/platform";
-import { renderRichTextPreview } from "@/lib/formatter/rich-text/renderRichTextPreview";
+import { renderRichTextContentPreview, renderRichTextPreview } from "@/lib/formatter/rich-text/renderRichTextPreview";
 import type { PlatformFormatting } from "@/lib/formatter/rich-text/formattingPolicy";
 
 type PlatformPreviewProps = {
     platform: Platform;
     text: string;
+    editorContent?: JSONContent | null;
 };
 
 const EMPTY_PREVIEW_TEXT = "Start typing to see your preview...";
@@ -51,15 +53,21 @@ function PreviewText({
     children,
     className,
     formatting,
+    editorContent,
 }: {
     children: string;
     className: string;
     formatting: PlatformFormatting;
+    editorContent?: JSONContent | null;
 }) {
+    if (editorContent) {
+        return <div className={className}>{renderRichTextContentPreview(editorContent, formatting)}</div>;
+    }
+
     return <div className={className}>{renderRichTextPreview(children, formatting)}</div>;
 }
 
-function WhatsAppPreview({ previewText, textClassName }: PreviewShellProps) {
+function WhatsAppPreview({ previewText, textClassName, editorContent }: PreviewShellProps & { editorContent?: JSONContent | null }) {
     return (
         <div className="overflow-hidden rounded-[10px] border bg-[#efe7dc]">
             <div className="flex items-center gap-3 bg-[#075E54] px-4 py-2.5 text-white">
@@ -73,7 +81,7 @@ function WhatsAppPreview({ previewText, textClassName }: PreviewShellProps) {
             </div>
             <div className="min-h-28 p-4">
                 <div className="max-w-[92%] rounded-r-2xl rounded-bl-2xl bg-white px-3 py-2 shadow-sm">
-                    <PreviewText className={textClassName} formatting="whatsapp">
+                    <PreviewText className={textClassName} formatting="whatsapp" editorContent={editorContent}>
                         {previewText}
                     </PreviewText>
                     <div className="mt-1 text-right text-[10px] text-zinc-400">
@@ -85,7 +93,7 @@ function WhatsAppPreview({ previewText, textClassName }: PreviewShellProps) {
     );
 }
 
-function TelegramPreview({ previewText, textClassName }: PreviewShellProps) {
+function TelegramPreview({ previewText, textClassName, editorContent }: PreviewShellProps & { editorContent?: JSONContent | null }) {
     return (
         <div className="overflow-hidden rounded-[10px] border bg-[#cfe7f5]">
             <div className="flex items-center gap-3 bg-[#2AABEE] px-4 py-2.5 text-white shadow-sm">
@@ -99,7 +107,7 @@ function TelegramPreview({ previewText, textClassName }: PreviewShellProps) {
             </div>
             <div className="min-h-28 p-4">
                 <div className="max-w-[92%] rounded-2xl rounded-tl-sm bg-white px-4 py-3 shadow-sm">
-                    <PreviewText className={textClassName} formatting="telegram">
+                    <PreviewText className={textClassName} formatting="telegram" editorContent={editorContent}>
                         {previewText}
                     </PreviewText>
                     <div className="mt-2 flex items-center justify-end gap-2 text-[10px] text-zinc-400">
@@ -113,7 +121,7 @@ function TelegramPreview({ previewText, textClassName }: PreviewShellProps) {
     );
 }
 
-function YouTubePreview({ previewText, textClassName }: PreviewShellProps) {
+function YouTubePreview({ previewText, textClassName, editorContent }: PreviewShellProps & { editorContent?: JSONContent | null }) {
     const [isExpanded, setIsExpanded] = useState(false);
 
     return (
@@ -130,6 +138,7 @@ function YouTubePreview({ previewText, textClassName }: PreviewShellProps) {
                     <PreviewText
                         className={isExpanded ? textClassName : `${textClassName} line-clamp-2`}
                         formatting="plain"
+                        editorContent={editorContent}
                     >
                         {previewText}
                     </PreviewText>
@@ -170,9 +179,10 @@ function YouTubePreview({ previewText, textClassName }: PreviewShellProps) {
 
 type InstagramPreviewProps = PreviewShellProps & {
     text: string;
+    editorContent?: JSONContent | null;
 };
 
-function InstagramPreview({ text, previewText }: InstagramPreviewProps) {
+function InstagramPreview({ text, previewText, editorContent }: InstagramPreviewProps) {
     const instagramText = splitInstagramHashtags(text);
 
     return (
@@ -202,10 +212,16 @@ function InstagramPreview({ text, previewText }: InstagramPreviewProps) {
             <div className="px-3 text-sm font-semibold">592 likes</div>
 
             <div className="space-y-2 px-3 pb-4 pt-2 text-[13px] leading-5">
-                <p className={text ? "whitespace-pre-wrap break-words" : "italic text-zinc-400"}>
+                <div className={text ? "whitespace-pre-wrap break-words" : "italic text-zinc-400"}>
                     <span className="font-bold not-italic text-zinc-900">captionforge </span>
-                    {text ? instagramText.body || instagramText.hashtags : previewText}
-                </p>
+                    {editorContent ? (
+                        <PreviewText className="inline" formatting="plain" editorContent={editorContent}>
+                            {previewText}
+                        </PreviewText>
+                    ) : (
+                        text ? instagramText.body || instagramText.hashtags : previewText
+                    )}
+                </div>
                 {instagramText.body && instagramText.hashtags && (
                     <p className="whitespace-pre-wrap break-words text-[#00376B]">
                         {instagramText.hashtags}
@@ -229,7 +245,7 @@ function PostImagePlaceholder() {
     );
 }
 
-function LinkedInPreview({ previewText, textClassName }: PreviewShellProps) {
+function LinkedInPreview({ previewText, textClassName, editorContent }: PreviewShellProps & { editorContent?: JSONContent | null }) {
     const [isExpanded, setIsExpanded] = useState(false);
 
     return (
@@ -250,6 +266,7 @@ function LinkedInPreview({ previewText, textClassName }: PreviewShellProps) {
                 <PreviewText
                     className={isExpanded ? textClassName : `${textClassName} line-clamp-3`}
                     formatting="plain"
+                    editorContent={editorContent}
                 >
                     {previewText}
                 </PreviewText>
@@ -297,22 +314,22 @@ function LinkedInPreview({ previewText, textClassName }: PreviewShellProps) {
     );
 }
 
-function PlatformPreview({ platform, text }: PlatformPreviewProps) {
+function PlatformPreview({ platform, text, editorContent }: PlatformPreviewProps) {
     const previewText = text || EMPTY_PREVIEW_TEXT;
     const textClassName = text
         ? "whitespace-pre-wrap break-words text-[13px] leading-5 text-zinc-900"
         : "whitespace-pre-wrap break-words text-xs italic leading-5 text-zinc-400";
 
     if (platform === "whatsapp") {
-        return <WhatsAppPreview previewText={previewText} textClassName={textClassName} />;
+        return <WhatsAppPreview previewText={previewText} textClassName={textClassName} editorContent={editorContent} />;
     }
 
     if (platform === "telegram") {
-        return <TelegramPreview previewText={previewText} textClassName={textClassName} />;
+        return <TelegramPreview previewText={previewText} textClassName={textClassName} editorContent={editorContent} />;
     }
 
     if (platform === "youtube") {
-        return <YouTubePreview previewText={previewText} textClassName={textClassName} />;
+        return <YouTubePreview previewText={previewText} textClassName={textClassName} editorContent={editorContent} />;
     }
 
     if (platform === "instagram") {
@@ -321,12 +338,13 @@ function PlatformPreview({ platform, text }: PlatformPreviewProps) {
                 text={text}
                 previewText={previewText}
                 textClassName={textClassName}
+                editorContent={editorContent}
             />
         );
     }
 
     if (platform === "linkedin") {
-        return <LinkedInPreview previewText={previewText} textClassName={textClassName} />;
+        return <LinkedInPreview previewText={previewText} textClassName={textClassName} editorContent={editorContent} />;
     }
 
     return (

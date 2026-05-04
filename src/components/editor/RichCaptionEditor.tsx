@@ -15,6 +15,10 @@ type RichCaptionEditorProps = {
     onChange: (value: string) => void;
     onEditorContentChange: (value: JSONContent | null) => void;
     onClear?: () => void;
+    showHeader?: boolean;
+    heading?: string;
+    clearLabel?: string;
+    description?: string;
 };
 
 function textToTipTapContent(value: string): JSONContent {
@@ -50,6 +54,10 @@ function RichCaptionEditor({
     onChange,
     onEditorContentChange,
     onClear,
+    showHeader = true,
+    heading = "Main Caption",
+    clearLabel = "Clear caption",
+    description,
 }: RichCaptionEditorProps) {
     const [formattingNotices, setFormattingNotices] = useState<FormattingNotice[]>([]);
     const isApplyingSanitizedContent = useRef(false);
@@ -182,18 +190,23 @@ function RichCaptionEditor({
 
     return (
         <>
-            <div className="flex items-center justify-between gap-3">
-                <h3 className="text-[13px] font-medium text-zinc-700">Main Caption</h3>
-                {value.trim() && onClear && (
-                    <button
-                        type="button"
-                        onClick={handleClear}
-                        className="text-xs font-semibold text-primary"
-                    >
-                        Clear caption
-                    </button>
-                )}
-            </div>
+            {showHeader ? (
+                <div className="flex items-center justify-between gap-3">
+                    <div className="space-y-1">
+                        <h3 className="text-[13px] font-medium text-zinc-700">{heading}</h3>
+                        {description ? <p className="text-[11px] text-muted-foreground">{description}</p> : null}
+                    </div>
+                    {value.trim() && onClear && (
+                        <button
+                            type="button"
+                            onClick={handleClear}
+                            className="text-xs font-semibold text-primary"
+                        >
+                            {clearLabel}
+                        </button>
+                    )}
+                </div>
+            ) : null}
             <div className="overflow-hidden rounded-[10px] border bg-white shadow-xs focus-within:ring-[3px] focus-within:ring-ring/50">
                 {editor && <EditorToolbar editor={editor} />}
                 <EditorContent editor={editor} />

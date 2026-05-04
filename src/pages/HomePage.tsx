@@ -29,6 +29,7 @@ function HomePage() {
         setHashtags,
         updateSettings,
         setCustomPlatformText,
+        setCustomPlatformContent,
         resetCustomPlatformText,
         resetDocument,
     } = useCaptionDocument(draftDocument);
@@ -116,7 +117,9 @@ function HomePage() {
                         activePlatform={activePlatform}
                         onPlatformChange={setActivePlatform}
                         customPlatformText={document.customPlatformText}
+                        customPlatformContent={document.customPlatformContent}
                         onCustomPlatformTextChange={setCustomPlatformText}
+                        onCustomPlatformContentChange={setCustomPlatformContent}
                         onCustomPlatformTextReset={resetCustomPlatformText}
                     />
                 </section>

@@ -9,6 +9,7 @@ export type CaptionDocument = {
     footer: string;
     hashtags: string[];
     customPlatformText: Partial<Record<Platform, string>>;
+    customPlatformContent: Partial<Record<Platform, JSONContent>>;
     settings: {
         includeFooter: boolean;
         attachHashtags: boolean;

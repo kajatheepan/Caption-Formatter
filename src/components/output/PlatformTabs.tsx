@@ -1,13 +1,16 @@
 import PlatformPreviewCard from "./PlatformPreviewCard";
 import type { FormattedOutput } from "@/lib/formatter/types";
 import type { Platform } from "@/types/platform";
+import type { JSONContent } from "@tiptap/core";
 
 type PlatformTabsProps = {
     outputs: FormattedOutput[];
     activePlatform: Platform;
     onPlatformChange: (platform: Platform) => void;
     customPlatformText: Partial<Record<Platform, string>>;
+    customPlatformContent: Partial<Record<Platform, JSONContent>>;
     onCustomPlatformTextChange: (platform: Platform, text: string) => void;
+    onCustomPlatformContentChange: (platform: Platform, content: JSONContent | null) => void;
     onCustomPlatformTextReset: (platform: Platform) => void;
 };
 
@@ -24,7 +27,9 @@ function PlatformTabs({
     activePlatform,
     onPlatformChange,
     customPlatformText,
+    customPlatformContent,
     onCustomPlatformTextChange,
+    onCustomPlatformContentChange,
     onCustomPlatformTextReset,
 }: PlatformTabsProps) {
     const activeOutput = outputs.find((output) => output.platform === activePlatform) ?? outputs[0];
@@ -69,9 +74,13 @@ function PlatformTabs({
                         characterLimit={output.characterLimit}
                         isOverLimit={output.isOverLimit}
                         customText={customPlatformText[output.platform]}
+                        customContent={customPlatformContent[output.platform]}
                         formattingNotices={output.formattingNotices}
                         onCustomTextChange={(text) =>
                             onCustomPlatformTextChange(output.platform, text)
+                        }
+                        onCustomContentChange={(content) =>
+                            onCustomPlatformContentChange(output.platform, content)
                         }
                         onCustomTextReset={() =>
                             onCustomPlatformTextReset(output.platform)

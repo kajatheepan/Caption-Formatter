@@ -53,6 +53,33 @@ function getCaptionSource(platform: Platform, document: CaptionDocument): {
     captionHtml?: string;
     formattingNotices: FormattingNotice[];
 } {
+    const customContent = document.customPlatformContent[platform];
+
+    if (customContent) {
+        if (platform === "whatsapp") {
+            const result = whatsappRichTextExportResult(customContent);
+            return {
+                caption: result.text,
+                captionHtml: exportRichTextHtmlForPlatform(customContent, "whatsapp"),
+                formattingNotices: result.notices,
+            };
+        }
+
+        if (platform === "telegram") {
+            const result = telegramRichTextExportResult(customContent);
+            return {
+                caption: result.text,
+                captionHtml: exportRichTextHtmlForPlatform(customContent, "telegram"),
+                formattingNotices: result.notices,
+            };
+        }
+
+        return {
+            caption: plainTextExporter(customContent),
+            formattingNotices: [],
+        };
+    }
+
     if (!document.editorContent) {
         return {
             caption: document.caption,

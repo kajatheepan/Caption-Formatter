@@ -11,6 +11,7 @@ const defaultDocument: CaptionDocument = {
     footer: "",
     hashtags: [],
     customPlatformText: {},
+    customPlatformContent: {},
     settings: {
         includeFooter: true,
         attachHashtags: false,
@@ -29,6 +30,7 @@ function createDocument(initialDocument?: Partial<CaptionDocument>): CaptionDocu
         },
         hashtags: initialDocument?.hashtags ?? defaultDocument.hashtags,
         customPlatformText: initialDocument?.customPlatformText ?? defaultDocument.customPlatformText,
+        customPlatformContent: initialDocument?.customPlatformContent ?? defaultDocument.customPlatformContent,
     };
 }
 
@@ -99,14 +101,34 @@ function useCaptionDocument(initialDocument?: Partial<CaptionDocument>) {
         }));
     };
 
+    const setCustomPlatformContent = (platform: Platform, content: JSONContent | null) => {
+        setDocument((currentDocument) => ({
+            ...currentDocument,
+            customPlatformContent: content
+                ? {
+                    ...currentDocument.customPlatformContent,
+                    [platform]: content,
+                }
+                : (() => {
+                    const nextCustomPlatformContent = { ...currentDocument.customPlatformContent };
+                    delete nextCustomPlatformContent[platform];
+                    return nextCustomPlatformContent;
+                })(),
+        }));
+    };
+
     const resetCustomPlatformText = (platform: Platform) => {
         setDocument((currentDocument) => {
             const nextCustomPlatformText = { ...currentDocument.customPlatformText };
             delete nextCustomPlatformText[platform];
 
+            const nextCustomPlatformContent = { ...currentDocument.customPlatformContent };
+            delete nextCustomPlatformContent[platform];
+
             return {
                 ...currentDocument,
                 customPlatformText: nextCustomPlatformText,
+                customPlatformContent: nextCustomPlatformContent,
             };
         });
     };
@@ -129,6 +151,7 @@ function useCaptionDocument(initialDocument?: Partial<CaptionDocument>) {
         setHashtags,
         updateSettings,
         setCustomPlatformText,
+        setCustomPlatformContent,
         resetCustomPlatformText,
         resetDocument,
         loadDocument,
