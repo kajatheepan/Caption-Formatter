@@ -1,11 +1,10 @@
 import type { JSONContent } from "@tiptap/core";
-import { renderRichText } from "./richTextRenderer";
+import { exportRichTextForPlatform } from "../rich-text/richTextExporter";
 
 export function telegramRichTextExporter(editorContent: JSONContent | null | undefined) {
-    return renderRichText(editorContent, {
-        code: (text) => text,
-        codeBlock: (text) => text,
-        link: (text, href) => `${text} (${href})`,
-        quote: (text) => `> ${text}`,
-    });
+    return exportRichTextForPlatform(editorContent, "telegram").text;
+}
+
+export function telegramRichTextExportResult(editorContent: JSONContent | null | undefined) {
+    return exportRichTextForPlatform(editorContent, "telegram");
 }

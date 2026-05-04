@@ -12,6 +12,8 @@ import {
     ThumbsUp,
 } from "lucide-react";
 import type { Platform } from "@/types/platform";
+import { renderRichTextPreview } from "@/lib/formatter/rich-text/renderRichTextPreview";
+import type { PlatformFormatting } from "@/lib/formatter/rich-text/formattingPolicy";
 
 type PlatformPreviewProps = {
     platform: Platform;
@@ -45,212 +47,6 @@ type PreviewShellProps = {
     textClassName: string;
 };
 
-type TextFormatting = "whatsapp" | "telegram" | "plain";
-
-type InlineToken = {
-    text: string;
-    style?: "bold" | "italic" | "strike" | "underline" | "code";
-};
-
-function parseInlineFormatting(text: string, formatting: TextFormatting): InlineToken[] {
-    if (formatting === "plain") {
-        return [{ text }];
-    }
-
-    const tokens: InlineToken[] = [];
-    const pattern = formatting === "telegram"
-        ? /(__([^_\n]+)__|\*([^*\n]+)\*|_([^_\n]+)_|~([^~\n]+)~|`([^`\n]+)`)/g
-        : /(\*([^*\n]+)\*|_([^_\n]+)_|~([^~\n]+)~|`([^`\n]+)`)/g;
-    let lastIndex = 0;
-    let match: RegExpExecArray | null;
-
-    while ((match = pattern.exec(text)) !== null) {
-        if (match.index > lastIndex) {
-            tokens.push({ text: text.slice(lastIndex, match.index) });
-        }
-
-        if (formatting === "telegram") {
-            if (match[2]) {
-                tokens.push({ text: match[2], style: "underline" });
-            } else if (match[3]) {
-                tokens.push({ text: match[3], style: "bold" });
-            } else if (match[4]) {
-                tokens.push({ text: match[4], style: "italic" });
-            } else if (match[5]) {
-                tokens.push({ text: match[5], style: "strike" });
-            } else if (match[6]) {
-                tokens.push({ text: match[6], style: "code" });
-            }
-        } else if (match[2]) {
-            tokens.push({ text: match[2], style: "bold" });
-        } else if (match[3]) {
-            tokens.push({ text: match[3], style: "italic" });
-        } else if (match[4]) {
-            tokens.push({ text: match[4], style: "strike" });
-        } else if (match[5]) {
-            tokens.push({ text: match[5], style: "code" });
-        }
-
-        lastIndex = pattern.lastIndex;
-    }
-
-    if (lastIndex < text.length) {
-        tokens.push({ text: text.slice(lastIndex) });
-    }
-
-    return tokens;
-}
-
-function renderInlineToken(token: InlineToken, key: string) {
-    if (token.style === "bold") {
-        return <strong key={key}>{token.text}</strong>;
-    }
-
-    if (token.style === "italic") {
-        return <em key={key}>{token.text}</em>;
-    }
-
-    if (token.style === "strike") {
-        return <span key={key} className="line-through">{token.text}</span>;
-    }
-
-    if (token.style === "underline") {
-        return <span key={key} className="underline underline-offset-2">{token.text}</span>;
-    }
-
-    if (token.style === "code") {
-        return (
-            <code key={key} className="rounded bg-zinc-100 px-1 py-0.5 font-mono text-[0.92em] text-zinc-900">
-                {token.text}
-            </code>
-        );
-    }
-
-    return <span key={key}>{token.text}</span>;
-}
-
-function renderInlineNodes(line: string, formatting: TextFormatting, lineIndex: number) {
-    return parseInlineFormatting(line, formatting).map((token, tokenIndex) =>
-        renderInlineToken(token, `${lineIndex}-${tokenIndex}`)
-    );
-}
-
-function renderFormattedText(text: string, formatting: TextFormatting) {
-    const parts = text.split(/(```[\s\S]*?```)/g).filter(Boolean);
-    let lineKey = 0;
-
-    return parts.map((part, partIndex) => {
-        if (part.startsWith("```") && part.endsWith("```")) {
-            return (
-                <pre
-                    key={`code-${partIndex}`}
-                    className="my-2 overflow-x-auto rounded-lg bg-zinc-950 px-3 py-2 font-mono text-xs leading-5 text-zinc-50"
-                >
-                    {part.slice(3, -3)}
-                </pre>
-            );
-        }
-
-        const lines = part.split("\n");
-        const blocks = [];
-
-        for (let index = 0; index < lines.length; index += 1) {
-            const line = lines[index];
-            const bulletMatch = line.match(/^\s*-\s+(.+)/);
-            const orderedMatch = line.match(/^\s*\d+\.\s+(.+)/);
-            const quoteMatch = line.match(/^\s*>\s?(.*)/);
-
-            if (bulletMatch) {
-                const items: string[] = [];
-
-                while (index < lines.length) {
-                    const itemMatch = lines[index].match(/^\s*-\s+(.+)/);
-                    if (!itemMatch) {
-                        break;
-                    }
-                    items.push(itemMatch[1]);
-                    index += 1;
-                }
-
-                index -= 1;
-                blocks.push(
-                    <ul key={`ul-${partIndex}-${lineKey}`} className="my-1 list-disc space-y-0.5 pl-5">
-                        {items.map((item, itemIndex) => (
-                            <li key={itemIndex}>{renderInlineNodes(item, formatting, lineKey + itemIndex)}</li>
-                        ))}
-                    </ul>
-                );
-                lineKey += items.length;
-                continue;
-            }
-
-            if (orderedMatch) {
-                const items: string[] = [];
-
-                while (index < lines.length) {
-                    const itemMatch = lines[index].match(/^\s*\d+\.\s+(.+)/);
-                    if (!itemMatch) {
-                        break;
-                    }
-                    items.push(itemMatch[1]);
-                    index += 1;
-                }
-
-                index -= 1;
-                blocks.push(
-                    <ol key={`ol-${partIndex}-${lineKey}`} className="my-1 list-decimal space-y-0.5 pl-5">
-                        {items.map((item, itemIndex) => (
-                            <li key={itemIndex}>{renderInlineNodes(item, formatting, lineKey + itemIndex)}</li>
-                        ))}
-                    </ol>
-                );
-                lineKey += items.length;
-                continue;
-            }
-
-            if (quoteMatch) {
-                const quoteLines: string[] = [];
-
-                while (index < lines.length) {
-                    const itemMatch = lines[index].match(/^\s*>\s?(.*)/);
-                    if (!itemMatch) {
-                        break;
-                    }
-                    quoteLines.push(itemMatch[1]);
-                    index += 1;
-                }
-
-                index -= 1;
-                blocks.push(
-                    <blockquote
-                        key={`quote-${partIndex}-${lineKey}`}
-                        className="my-2 border-l-4 border-zinc-300 pl-3 text-zinc-700"
-                    >
-                        {quoteLines.map((quoteLine, quoteIndex) => (
-                            <span key={quoteIndex}>
-                                {renderInlineNodes(quoteLine, formatting, lineKey + quoteIndex)}
-                                {quoteIndex < quoteLines.length - 1 ? <br /> : null}
-                            </span>
-                        ))}
-                    </blockquote>
-                );
-                lineKey += quoteLines.length;
-                continue;
-            }
-
-            blocks.push(
-                <span key={`line-${partIndex}-${lineKey}`}>
-                    {renderInlineNodes(line, formatting, lineKey)}
-                    {index < lines.length - 1 ? <br /> : null}
-                </span>
-            );
-            lineKey += 1;
-        }
-
-        return <span key={`part-${partIndex}`}>{blocks}</span>;
-    });
-}
-
 function PreviewText({
     children,
     className,
@@ -258,9 +54,9 @@ function PreviewText({
 }: {
     children: string;
     className: string;
-    formatting: TextFormatting;
+    formatting: PlatformFormatting;
 }) {
-    return <div className={className}>{renderFormattedText(children, formatting)}</div>;
+    return <div className={className}>{renderRichTextPreview(children, formatting)}</div>;
 }
 
 function WhatsAppPreview({ previewText, textClassName }: PreviewShellProps) {

@@ -64,10 +64,12 @@ function PlatformTabs({
                         platform={output.platform}
                         label={output.label}
                         text={output.text}
+                        html={output.html}
                         characterCount={output.characterCount}
                         characterLimit={output.characterLimit}
                         isOverLimit={output.isOverLimit}
                         customText={customPlatformText[output.platform]}
+                        formattingNotices={output.formattingNotices}
                         onCustomTextChange={(text) =>
                             onCustomPlatformTextChange(output.platform, text)
                         }

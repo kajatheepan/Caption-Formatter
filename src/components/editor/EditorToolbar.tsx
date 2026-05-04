@@ -2,12 +2,13 @@ import type { Editor } from "@tiptap/react";
 import {
     Bold,
     Code,
-    FileCode,
+    CodeXml,
     Italic,
     List,
     ListOrdered,
     Quote,
     RemoveFormatting,
+    ScanEye,
     Strikethrough,
     Underline,
     type LucideIcon,
@@ -95,9 +96,15 @@ function EditorToolbar({ editor }: EditorToolbarProps) {
             />
             <ToolbarButton
                 label="Code block"
-                icon={FileCode}
+                icon={CodeXml}
                 isActive={editor.isActive("codeBlock")}
                 onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+            />
+            <ToolbarButton
+                label="Telegram spoiler"
+                icon={ScanEye}
+                isActive={editor.isActive("spoiler")}
+                onClick={() => editor.chain().focus().toggleMark("spoiler").run()}
             />
             <ToolbarButton
                 label="Clear formatting"

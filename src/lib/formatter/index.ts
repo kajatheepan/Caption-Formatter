@@ -1,4 +1,5 @@
 import { PLATFORM_CONFIG } from "@/lib/constants";
+import { cleanHashtags } from "@/lib/hashtags/cleanHashtags";
 import type { CaptionDocument } from "@/types/caption";
 import type { Platform } from "@/types/platform";
 import type { FormattedOutput } from "./types";
@@ -8,8 +9,14 @@ import { formatTelegramCaption, TelegramFormatter } from "./telegramFormatter";
 import { formatWhatsappCaption, WhatsappFormatter } from "./whatsappFormatter";
 import { formatYoutubeCaption, YoutubeFormatter } from "./youtubeFormatter";
 import { plainTextExporter } from "./exporters/plainTextExporter";
-import { telegramRichTextExporter } from "./exporters/telegramRichTextExporter";
-import { whatsappRichTextExporter } from "./exporters/whatsappRichTextExporter";
+import { telegramRichTextExportResult } from "./exporters/telegramRichTextExporter";
+import { whatsappRichTextExportResult } from "./exporters/whatsappRichTextExporter";
+import type { FormattingNotice } from "./rich-text/formattingPolicy";
+import {
+    exportRichTextHtmlForPlatform,
+    joinClipboardHtmlParts,
+    textToClipboardHtml,
+} from "./rich-text/richTextHtmlExporter";
 
 export { TelegramFormatter } from "./telegramFormatter";
 export { YoutubeFormatter } from "./youtubeFormatter";
@@ -41,53 +48,119 @@ function joinCaptionParts(caption: string, footer: string) {
     return caption || footer;
 }
 
-function getCaptionSource(platform: Platform, document: CaptionDocument) {
+function getCaptionSource(platform: Platform, document: CaptionDocument): {
+    caption: string;
+    captionHtml?: string;
+    formattingNotices: FormattingNotice[];
+} {
     if (!document.editorContent) {
-        return document.caption;
+        return {
+            caption: document.caption,
+            formattingNotices: [],
+        };
     }
 
     if (platform === "whatsapp") {
-        return whatsappRichTextExporter(document.editorContent);
+        const result = whatsappRichTextExportResult(document.editorContent);
+        return {
+            caption: result.text,
+            captionHtml: exportRichTextHtmlForPlatform(document.editorContent, "whatsapp"),
+            formattingNotices: result.notices,
+        };
     }
 
     if (platform === "telegram") {
-        return telegramRichTextExporter(document.editorContent);
+        const result = telegramRichTextExportResult(document.editorContent);
+        return {
+            caption: result.text,
+            captionHtml: exportRichTextHtmlForPlatform(document.editorContent, "telegram"),
+            formattingNotices: result.notices,
+        };
     }
 
-    return plainTextExporter(document.editorContent);
-}
-
-function buildDocumentForPlatform(platform: Platform, document: CaptionDocument): CaptionDocument {
     return {
-        ...document,
-        caption: getCaptionSource(platform, document),
+        caption: plainTextExporter(document.editorContent),
+        formattingNotices: [],
     };
 }
 
+function buildDocumentForPlatform(platform: Platform, document: CaptionDocument): {
+    document: CaptionDocument;
+    captionHtml?: string;
+    formattingNotices: FormattingNotice[];
+} {
+    const captionSource = getCaptionSource(platform, document);
+
+    return {
+        document: {
+            ...document,
+            caption: captionSource.caption,
+        },
+        captionHtml: captionSource.captionHtml,
+        formattingNotices: captionSource.formattingNotices,
+    };
+}
+
+function buildClipboardHtml(
+    platform: Platform,
+    document: CaptionDocument,
+    captionHtml?: string
+) {
+    if ((platform !== "telegram" && platform !== "whatsapp") || !captionHtml) {
+        return undefined;
+    }
+
+    const parts = [captionHtml];
+
+    if (document.settings.includeFooter) {
+        parts.push(textToClipboardHtml(document.footer));
+    }
+
+    if (document.settings.attachHashtags) {
+        parts.push(textToClipboardHtml(cleanHashtags(document.hashtags).join(" ")));
+    }
+
+    return joinClipboardHtmlParts(parts);
+}
+
 function getRawTextForPlatform(platform: Platform, document: CaptionDocument) {
-    const platformDocument = buildDocumentForPlatform(platform, document);
+    const {
+        document: platformDocument,
+        captionHtml,
+        formattingNotices,
+    } = buildDocumentForPlatform(platform, document);
+    const html = buildClipboardHtml(platform, document, captionHtml);
+    let text: string;
 
     if (platform === "whatsapp") {
-        return formatWhatsappCaption(platformDocument);
+        text = formatWhatsappCaption(platformDocument);
+        return { text, html, formattingNotices };
     }
 
     if (platform === "telegram") {
-        return formatTelegramCaption(platformDocument);
+        text = formatTelegramCaption(platformDocument);
+        return { text, html, formattingNotices };
     }
 
     if (platform === "youtube") {
-        return formatYoutubeCaption(platformDocument);
+        text = formatYoutubeCaption(platformDocument);
+        return { text, formattingNotices };
     }
 
     if (platform === "instagram") {
-        return formatInstagramCaption(platformDocument);
+        text = formatInstagramCaption(platformDocument);
+        return { text, formattingNotices };
     }
 
     if (platform === "linkedin") {
-        return formatLinkedinCaption(platformDocument);
+        text = formatLinkedinCaption(platformDocument);
+        return { text, formattingNotices };
     }
 
-    return joinCaptionParts(platformDocument.caption, platformDocument.footer);
+    return {
+        text: joinCaptionParts(platformDocument.caption, platformDocument.footer),
+        formattingNotices,
+    };
 }
 
 function hasCustomPlatformText(platform: Platform, document: CaptionDocument) {
@@ -99,9 +172,10 @@ export function formatForPlatform(
     document: CaptionDocument
 ): FormattedOutput {
     const config = PLATFORM_CONFIG[platform];
-    const rawText = hasCustomPlatformText(platform, document)
-        ? document.customPlatformText[platform] ?? ""
+    const formatted = hasCustomPlatformText(platform, document)
+        ? { text: document.customPlatformText[platform] ?? "", html: undefined, formattingNotices: [] }
         : getRawTextForPlatform(platform, document);
+    const rawText = formatted.text;
     const text = hasCustomPlatformText(platform, document) || document.editorContent
         ? rawText
         : formatters[platform](rawText);
@@ -111,9 +185,11 @@ export function formatForPlatform(
         platform,
         label: config.label,
         text,
+        html: formatted.html,
         characterCount,
         characterLimit: config.limit,
         isOverLimit: characterCount > config.limit,
+        formattingNotices: formatted.formattingNotices,
     };
 }
 

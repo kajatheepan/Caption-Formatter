@@ -4,9 +4,18 @@ function useClipboard(resetDelay = 1200) {
     const [copied, setCopied] = useState(false);
     const [error, setError] = useState<Error | null>(null);
 
-    const copy = async (text: string) => {
+    const copy = async (text: string, html?: string) => {
         try {
-            await navigator.clipboard.writeText(text);
+            if (html && "ClipboardItem" in window && navigator.clipboard.write) {
+                await navigator.clipboard.write([
+                    new ClipboardItem({
+                        "text/html": new Blob([html], { type: "text/html" }),
+                        "text/plain": new Blob([text], { type: "text/plain" }),
+                    }),
+                ]);
+            } else {
+                await navigator.clipboard.writeText(text);
+            }
             setCopied(true);
             setError(null);
             setTimeout(() => setCopied(false), resetDelay);

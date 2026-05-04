@@ -14,15 +14,18 @@ import type { Platform } from "@/types/platform";
 import CharacterCounter from "./CharacterCounter";
 import CopyButton from "./CopyButton";
 import PlatformPreview from "./PlatformPreview";
+import type { FormattingNotice } from "@/lib/formatter/rich-text/formattingPolicy";
 
 type PlatformPreviewCardProps = {
     platform: Platform;
     label: string;
     text: string;
+    html?: string;
     characterCount: number;
     characterLimit: number;
     isOverLimit: boolean;
     customText?: string;
+    formattingNotices?: FormattingNotice[];
     onCustomTextChange: (text: string) => void;
     onCustomTextReset: () => void;
 };
@@ -47,10 +50,12 @@ function PlatformPreviewCard({
     platform,
     label,
     text,
+    html,
     characterCount,
     characterLimit,
     isOverLimit,
     customText,
+    formattingNotices = [],
     onCustomTextChange,
     onCustomTextReset,
 }: PlatformPreviewCardProps) {
@@ -88,7 +93,12 @@ function PlatformPreviewCard({
                                 <span className="absolute left-0.5 size-4 rounded-full bg-white shadow-sm transition peer-checked:translate-x-4" />
                             </span>
                         </label>
-                        <CopyButton text={text} />
+                        <CopyButton
+                            text={text}
+                            html={html}
+                            disabled={isOverLimit}
+                            disabledMessage={isOverLimit ? "Reduce text before copying." : undefined}
+                        />
                     </div>
                 </div>
             </CardHeader>
@@ -99,6 +109,23 @@ function PlatformPreviewCard({
                     limit={characterLimit}
                     isOverLimit={isOverLimit}
                 />
+                {isOverLimit ? (
+                    <div className="rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive">
+                        This output is over the {label} limit. Shorten it before copying.
+                    </div>
+                ) : null}
+                {formattingNotices.length > 0 ? (
+                    <div className="space-y-1 rounded-xl border bg-muted/50 px-3 py-2">
+                        {formattingNotices.map((notice) => (
+                            <p
+                                key={notice.message}
+                                className={notice.type === "warning" ? "text-xs text-destructive" : "text-xs text-muted-foreground"}
+                            >
+                                {notice.message}
+                            </p>
+                        ))}
+                    </div>
+                ) : null}
                 {isEditing ? (
                     <div className="space-y-3 rounded-xl border bg-primary/5 p-3">
                         <div className="flex items-center justify-between gap-3">
