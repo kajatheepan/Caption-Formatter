@@ -78,13 +78,6 @@ function getPrimaryFormattingMark(marks: JSONContent["marks"], state: ExportStat
             return supportedMarks.has(markType);
         });
 
-    if (supportedTextMarks.length > 1) {
-        addNotice(state, {
-            type: "info",
-            message: "Combined text styles were simplified so pasted text stays reliable.",
-        });
-    }
-
     if (supportedTextMarks.includes("spoiler")) return "spoiler";
     if (supportedTextMarks.includes("bold")) return "bold";
     if (supportedTextMarks.includes("italic")) return "italic";
@@ -93,9 +86,71 @@ function getPrimaryFormattingMark(marks: JSONContent["marks"], state: ExportStat
     return supportedTextMarks[0] ?? null;
 }
 
+function tryRenderWhatsAppCombined(text: string, supportedTextMarks: RichTextMarkType[], state: ExportState) {
+    const delimiterFor: Record<RichTextMarkType, string> = {
+        bold: "*",
+        italic: "_",
+        strike: "~",
+        code: "`",
+        underline: "",
+        link: "",
+        spoiler: "",
+    } as const;
+
+    const nestingOrder: RichTextMarkType[] = ["bold", "italic", "strike"];
+    const marksToWrap = nestingOrder.filter((m) => supportedTextMarks.includes(m));
+
+    if (marksToWrap.length <= 1) return null;
+    if (!text.trim() || text.includes("\n")) return null;
+
+    for (const mark of marksToWrap) {
+        const delim = delimiterFor[mark];
+        if (!delim) return null;
+        if (text.includes(delim)) return null;
+    }
+
+    let rendered = text;
+    for (const mark of marksToWrap.reverse()) {
+        const delim = delimiterFor[mark];
+        rendered = `${delim}${rendered}${delim}`;
+    }
+
+    return rendered;
+}
+
 function renderTextWithMarks(text: string, marks: JSONContent["marks"], state: ExportState) {
     if (state.platform === "plain" || !marks?.length) {
         return text;
+    }
+
+    const supportedMarks = PLATFORM_SUPPORTED_MARKS[state.platform];
+    const supportedTextMarks = marks
+        .map((mark) => mark.type as RichTextMarkType)
+        .filter((markType) => {
+            if (state.platform === "whatsapp" && state.insideList && markType === "strike") {
+                addNotice(state, { type: "info", message: WHATSAPP_LIST_STRIKE_UNSUPPORTED_NOTICE });
+                return false;
+            }
+
+            return supportedMarks.has(markType);
+        });
+
+    if (state.platform === "telegram" && supportedTextMarks.length > 1) {
+        addNotice(state, {
+            type: "info",
+            message: "Combined text styles were simplified so pasted text stays reliable.",
+        });
+    }
+
+    // For WhatsApp, try to emit nested delimiters when safe (e.g. `_~text~_`).
+    if (state.platform === "whatsapp" && supportedTextMarks.length > 1) {
+        const combined = tryRenderWhatsAppCombined(text, supportedTextMarks, state);
+        if (combined) return combined;
+        // otherwise fall through and simplify with primary mark below and add notice
+        addNotice(state, {
+            type: "info",
+            message: "Combined text styles were simplified so pasted text stays reliable.",
+        });
     }
 
     const primaryMark = getPrimaryFormattingMark(marks, state);

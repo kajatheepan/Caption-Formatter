@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import type { Editor } from "@tiptap/react";
 import {
     Bold,
@@ -19,18 +20,24 @@ type ToolbarButtonProps = {
     label: string;
     icon: LucideIcon;
     isActive?: boolean;
+    disabled?: boolean;
     onClick: () => void;
 };
 
-function ToolbarButton({ label, icon: Icon, isActive = false, onClick }: ToolbarButtonProps) {
+function ToolbarButton({ label, icon: Icon, isActive = false, disabled = false, onClick }: ToolbarButtonProps) {
     return (
         <button
             type="button"
             title={label}
             aria-label={label}
+            aria-pressed={isActive}
+            disabled={disabled}
+            onMouseDown={(event) => {
+                event.preventDefault();
+            }}
             onClick={onClick}
             className={cn(
-                "flex size-8 items-center justify-center rounded-md text-zinc-700 transition hover:bg-zinc-100 hover:text-zinc-950",
+                "flex size-8 items-center justify-center rounded-md text-zinc-700 transition hover:bg-zinc-100 hover:text-zinc-950 disabled:cursor-not-allowed disabled:opacity-40",
                 isActive && "bg-primary/10 text-primary"
             )}
         >
@@ -44,30 +51,55 @@ type EditorToolbarProps = {
 };
 
 function EditorToolbar({ editor }: EditorToolbarProps) {
+    const [, setRenderKey] = useState(0);
+    const isCodeBlockActive = editor.isActive("codeBlock");
+
+    useEffect(() => {
+        const rerenderToolbar = () => {
+            setRenderKey((current) => current + 1);
+        };
+
+        editor.on("selectionUpdate", rerenderToolbar);
+        editor.on("transaction", rerenderToolbar);
+        editor.on("focus", rerenderToolbar);
+        editor.on("blur", rerenderToolbar);
+
+        return () => {
+            editor.off("selectionUpdate", rerenderToolbar);
+            editor.off("transaction", rerenderToolbar);
+            editor.off("focus", rerenderToolbar);
+            editor.off("blur", rerenderToolbar);
+        };
+    }, [editor]);
+
     return (
         <div className="flex flex-wrap items-center justify-center gap-1 border-b bg-white px-3 py-2">
             <ToolbarButton
                 label="Bold"
                 icon={Bold}
                 isActive={editor.isActive("bold")}
+                disabled={isCodeBlockActive}
                 onClick={() => editor.chain().focus().toggleBold().run()}
             />
             <ToolbarButton
                 label="Italic"
                 icon={Italic}
                 isActive={editor.isActive("italic")}
+                disabled={isCodeBlockActive}
                 onClick={() => editor.chain().focus().toggleItalic().run()}
             />
             <ToolbarButton
                 label="Strikethrough"
                 icon={Strikethrough}
                 isActive={editor.isActive("strike")}
+                disabled={isCodeBlockActive}
                 onClick={() => editor.chain().focus().toggleStrike().run()}
             />
             <ToolbarButton
                 label="Underline"
                 icon={Underline}
                 isActive={editor.isActive("underline")}
+                disabled={isCodeBlockActive}
                 onClick={() => editor.chain().focus().toggleUnderline().run()}
             />
             <ToolbarButton
@@ -92,6 +124,7 @@ function EditorToolbar({ editor }: EditorToolbarProps) {
                 label="Inline code"
                 icon={Code}
                 isActive={editor.isActive("code")}
+                disabled={isCodeBlockActive}
                 onClick={() => editor.chain().focus().toggleCode().run()}
             />
             <ToolbarButton
@@ -104,6 +137,7 @@ function EditorToolbar({ editor }: EditorToolbarProps) {
                 label="Telegram spoiler"
                 icon={ScanEye}
                 isActive={editor.isActive("spoiler")}
+                disabled={isCodeBlockActive}
                 onClick={() => editor.chain().focus().toggleMark("spoiler").run()}
             />
             <ToolbarButton

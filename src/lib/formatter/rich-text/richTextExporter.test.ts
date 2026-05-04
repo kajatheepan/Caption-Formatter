@@ -56,6 +56,23 @@ describe("exportRichTextForPlatform", () => {
         });
     });
 
+    it("simplifies nested WhatsApp marks to one reliable pasted style", () => {
+        const result = exportRichTextForPlatform({
+            type: "doc",
+            content: [{
+                type: "paragraph",
+                content: [{
+                    type: "text",
+                    text: "nested",
+                    marks: [{ type: "italic" }, { type: "strike" }],
+                }],
+            }],
+        }, "whatsapp");
+
+        // New behavior: when safe, WhatsApp exports nested delimiters (italic outside, strike inside)
+        expect(result.text).toBe("_~nested~_");
+    });
+
     it("does not add blank lines between normal paragraphs", () => {
         const result = exportRichTextForPlatform({
             type: "doc",
