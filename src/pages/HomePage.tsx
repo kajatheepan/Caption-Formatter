@@ -61,7 +61,7 @@ function HomePage() {
             copyAllCopied={copyAllCopied}
             copyAllError={Boolean(copyAllError)}
         >
-            <div className="mx-auto grid w-full max-w-[1160px] gap-6 lg:grid-cols-[380px_minmax(0,1fr)]">
+            <div className="mx-auto grid w-full max-w-[1280px] gap-5 lg:grid-cols-[340px_minmax(0,1fr)]">
                 <section className="flex flex-col gap-4">
                     <Card className="rounded-[14px] shadow-md shadow-black/5">
                         <CardHeader className="pb-3">
@@ -107,7 +107,7 @@ function HomePage() {
                     </Card>
                 </section>
 
-                <section className="flex min-w-0 flex-col gap-4">
+                <section className="flex min-w-0 w-full flex-col gap-4">
                     <div className="flex items-center justify-between px-1">
                         <h2 className="text-lg font-bold">Platform Preview</h2>
                         <p className="text-sm text-muted-foreground">Select one platform</p>

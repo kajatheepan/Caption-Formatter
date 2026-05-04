@@ -15,6 +15,8 @@ import {
 import type { Platform } from "@/types/platform";
 import { renderRichTextContentPreview, renderRichTextPreview } from "@/lib/formatter/rich-text/renderRichTextPreview";
 import type { PlatformFormatting } from "@/lib/formatter/rich-text/formattingPolicy";
+import { telegramRichTextExporter } from "@/lib/formatter/exporters/telegramRichTextExporter";
+import { whatsappRichTextExporter } from "@/lib/formatter/exporters/whatsappRichTextExporter";
 
 type PlatformPreviewProps = {
     platform: Platform;
@@ -68,6 +70,8 @@ function PreviewText({
 }
 
 function WhatsAppPreview({ previewText, textClassName, editorContent }: PreviewShellProps & { editorContent?: JSONContent | null }) {
+    const displayText = editorContent ? whatsappRichTextExporter(editorContent) : previewText;
+
     return (
         <div className="overflow-hidden rounded-[10px] border bg-[#efe7dc]">
             <div className="flex items-center gap-3 bg-[#075E54] px-4 py-2.5 text-white">
@@ -79,10 +83,10 @@ function WhatsAppPreview({ previewText, textClassName, editorContent }: PreviewS
                     <div className="text-[10px] text-white/75">online</div>
                 </div>
             </div>
-            <div className="min-h-28 p-4">
-                <div className="max-w-[92%] rounded-r-2xl rounded-bl-2xl bg-white px-3 py-2 shadow-sm">
-                    <PreviewText className={textClassName} formatting="whatsapp" editorContent={editorContent}>
-                        {previewText}
+            <div className="min-h-28 p-3 sm:p-4">
+                <div className="w-full max-w-[84%] rounded-r-2xl rounded-bl-2xl bg-white px-3 py-2 shadow-sm sm:px-4 sm:py-3">
+                    <PreviewText className={`${textClassName} text-[12px] leading-5 sm:text-[13px]`} formatting="whatsapp">
+                        {displayText}
                     </PreviewText>
                     <div className="mt-1 text-right text-[10px] text-zinc-400">
                         05:38 <span className="text-sky-400">✓✓</span>
@@ -94,6 +98,8 @@ function WhatsAppPreview({ previewText, textClassName, editorContent }: PreviewS
 }
 
 function TelegramPreview({ previewText, textClassName, editorContent }: PreviewShellProps & { editorContent?: JSONContent | null }) {
+    const displayText = editorContent ? telegramRichTextExporter(editorContent) : previewText;
+
     return (
         <div className="overflow-hidden rounded-[10px] border bg-[#cfe7f5]">
             <div className="flex items-center gap-3 bg-[#2AABEE] px-4 py-2.5 text-white shadow-sm">
@@ -105,10 +111,10 @@ function TelegramPreview({ previewText, textClassName, editorContent }: PreviewS
                     <div className="text-[10px] text-white/80">1.2M subscribers</div>
                 </div>
             </div>
-            <div className="min-h-28 p-4">
-                <div className="max-w-[92%] rounded-2xl rounded-tl-sm bg-white px-4 py-3 shadow-sm">
-                    <PreviewText className={textClassName} formatting="telegram" editorContent={editorContent}>
-                        {previewText}
+            <div className="min-h-28 p-3 sm:p-4">
+                <div className="w-full max-w-[82%] rounded-2xl rounded-tl-sm bg-white px-3 py-2.5 shadow-sm sm:px-4 sm:py-3">
+                    <PreviewText className={`${textClassName} text-[12px] leading-5 sm:text-[13px]`} formatting="telegram">
+                        {displayText}
                     </PreviewText>
                     <div className="mt-2 flex items-center justify-end gap-2 text-[10px] text-zinc-400">
                         <span>1.4K views</span>

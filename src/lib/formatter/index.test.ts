@@ -48,4 +48,20 @@ describe("formatForPlatform", () => {
         expect(result.html).toContain("<s>");
         expect(result.formattingNotices).toHaveLength(0);
     });
+
+    it("prefers rich custom platform content over plain custom text", () => {
+        const result = formatForPlatform("telegram", {
+            ...baseDocument,
+            customPlatformText: {
+                telegram: "plain fallback text",
+            },
+            customPlatformContent: {
+                telegram: richContent,
+            },
+        });
+
+        expect(result.text).toBe("__rich text__");
+        expect(result.html).toContain("<em>");
+        expect(result.html).toContain("<s>");
+    });
 });

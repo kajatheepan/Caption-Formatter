@@ -147,7 +147,7 @@ function PlatformPreviewCard({
                                 </p>
                             </div>
                         </div>
-                        <div className="grid gap-3 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+                        <div className="grid gap-3">
                             <div className="rounded-[10px] border bg-white p-3">
                                 <RichCaptionEditor
                                     value={previewText}

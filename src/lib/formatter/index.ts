@@ -190,6 +190,10 @@ function getRawTextForPlatform(platform: Platform, document: CaptionDocument) {
     };
 }
 
+function hasCustomPlatformContent(platform: Platform, document: CaptionDocument) {
+    return document.customPlatformContent[platform] !== undefined;
+}
+
 function hasCustomPlatformText(platform: Platform, document: CaptionDocument) {
     return document.customPlatformText[platform] !== undefined;
 }
@@ -199,7 +203,9 @@ export function formatForPlatform(
     document: CaptionDocument
 ): FormattedOutput {
     const config = PLATFORM_CONFIG[platform];
-    const formatted = hasCustomPlatformText(platform, document)
+    const formatted = hasCustomPlatformContent(platform, document)
+        ? getRawTextForPlatform(platform, document)
+        : hasCustomPlatformText(platform, document)
         ? { text: document.customPlatformText[platform] ?? "", html: undefined, formattingNotices: [] }
         : getRawTextForPlatform(platform, document);
     const rawText = formatted.text;
