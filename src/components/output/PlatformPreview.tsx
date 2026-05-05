@@ -101,22 +101,29 @@ function TelegramPreview({ previewText, textClassName, editorContent }: PreviewS
     const displayText = editorContent ? telegramRichTextExporter(editorContent) : previewText;
 
     return (
-        <div className="overflow-hidden rounded-[10px] border bg-[#cfe7f5]">
+        <div className="overflow-hidden rounded-[10px] border bg-[#d8ecf8]">
             <div className="flex items-center gap-3 bg-[#2AABEE] px-4 py-2.5 text-white shadow-sm">
                 <div className="grid size-9 place-items-center rounded-full bg-white text-xs font-bold text-[#2AABEE]">
                     CF
                 </div>
-                <div>
-                    <div className="text-sm font-bold">Your Channel</div>
+                <div className="min-w-0">
+                    <div className="text-sm font-bold leading-4">Your Channel</div>
                     <div className="text-[10px] text-white/80">1.2M subscribers</div>
                 </div>
             </div>
-            <div className="min-h-28 p-3 sm:p-4">
-                <div className="w-full max-w-[82%] rounded-2xl rounded-tl-sm bg-white px-3 py-2.5 shadow-sm sm:px-4 sm:py-3">
-                    <PreviewText className={`${textClassName} text-[12px] leading-5 sm:text-[13px]`} formatting="telegram">
+            <div
+                className="min-h-28 px-3 py-3 sm:px-4 sm:py-4"
+                style={{
+                    backgroundImage:
+                        "radial-gradient(circle at 20% 20%, rgba(42,171,238,0.08) 0 1px, transparent 1px), radial-gradient(circle at 80% 30%, rgba(42,171,238,0.08) 0 1px, transparent 1px), radial-gradient(circle at 40% 80%, rgba(42,171,238,0.06) 0 1px, transparent 1px), linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.12))",
+                    backgroundSize: "88px 88px, 116px 116px, 140px 140px, 100% 100%",
+                }}
+            >
+                <div className="w-full max-w-[88%] rounded-2xl rounded-tl-sm bg-[#EFFDDE] px-3 py-2.5 ring-1 ring-[#cfe9d0] sm:px-4 sm:py-3">
+                    <PreviewText className={`${textClassName} text-[12px] leading-5 text-[#24303f] sm:text-[13px]`} formatting="telegram">
                         {displayText}
                     </PreviewText>
-                    <div className="mt-2 flex items-center justify-end gap-2 text-[10px] text-zinc-400">
+                    <div className="mt-2 flex items-center justify-end gap-2 text-[10px] text-zinc-500">
                         <span>1.4K views</span>
                         <span>05:38</span>
                         <span className="text-[#2AABEE]">✓</span>
