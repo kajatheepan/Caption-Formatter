@@ -7,7 +7,12 @@ import EditorToolbar from "./EditorToolbar";
 import { Spoiler } from "./extensions/Spoiler";
 import { parseMarkdownToRichText } from "@/lib/formatter/rich-text/markdownParser";
 import { sanitizeRichTextContent } from "@/lib/formatter/rich-text/sanitizeRichText";
-import { createEmptyDocument, type FormattingNotice } from "@/lib/formatter/rich-text/formattingPolicy";
+import {
+    createEmptyDocument,
+    PLATFORM_SUPPORTED_MARKS,
+    type FormattingNotice,
+    type PlatformFormatting,
+} from "@/lib/formatter/rich-text/formattingPolicy";
 
 type RichCaptionEditorProps = {
     value: string;
@@ -19,6 +24,7 @@ type RichCaptionEditorProps = {
     heading?: string;
     clearLabel?: string;
     description?: string;
+    formatting?: PlatformFormatting;
 };
 
 function textToTipTapContent(value: string): JSONContent {
@@ -37,6 +43,30 @@ function textToTipTapContent(value: string): JSONContent {
 
 function getInitialContent(value: string, editorContent?: JSONContent | null): JSONContent {
     return editorContent ?? textToTipTapContent(value);
+}
+
+function sanitizeContentForPlatform(content: JSONContent, formatting: PlatformFormatting) {
+    const supportedMarks = PLATFORM_SUPPORTED_MARKS[formatting];
+
+    const sanitizeNode = (node: JSONContent): JSONContent => {
+        const nextNode: JSONContent = {
+            ...node,
+            marks: node.marks?.filter((mark) => supportedMarks.has(mark.type as any)),
+            content: node.content?.map((childNode) => sanitizeNode(childNode)),
+        };
+
+        if (!nextNode.marks?.length) {
+            delete nextNode.marks;
+        }
+
+        if (!nextNode.content?.length) {
+            delete nextNode.content;
+        }
+
+        return nextNode;
+    };
+
+    return sanitizeNode(content);
 }
 
 const hasMarkdownFormatting = (text: string) =>
@@ -58,6 +88,7 @@ function RichCaptionEditor({
     heading = "Main Caption",
     clearLabel = "Clear caption",
     description,
+    formatting = "telegram",
 }: RichCaptionEditorProps) {
     const [formattingNotices, setFormattingNotices] = useState<FormattingNotice[]>([]);
     const isApplyingSanitizedContent = useRef(false);
@@ -73,24 +104,28 @@ function RichCaptionEditor({
 
     const sanitizeCurrentEditorContent = useCallback((currentEditor: NonNullable<ReturnType<typeof useEditor>>) => {
         const sanitized = sanitizeRichTextContent(currentEditor.getJSON());
+        const platformSanitizedContent = sanitizeContentForPlatform(sanitized.content, formatting);
         const currentJson = JSON.stringify(currentEditor.getJSON());
-        const sanitizedJson = JSON.stringify(sanitized.content);
+        const sanitizedJson = JSON.stringify(platformSanitizedContent);
         let nextEditorContent: JSONContent = currentEditor.getJSON();
 
         setFormattingNotices(sanitized.notices);
 
         if (currentJson !== sanitizedJson) {
             isApplyingSanitizedContent.current = true;
-            currentEditor.commands.setContent(sanitized.content);
+            currentEditor.commands.setContent(platformSanitizedContent);
             isApplyingSanitizedContent.current = false;
-            nextEditorContent = sanitized.content;
+            nextEditorContent = platformSanitizedContent;
         }
 
         syncEditorContent(currentEditor, nextEditorContent);
     }, [syncEditorContent]);
 
     const insertMarkdownPaste = useCallback((currentEditor: Editor, pastedText: string) => {
-        const parsedContent = parseMarkdownToRichText(pastedText, getPasteMarkdownPlatform(pastedText));
+        const pasteFormatting = formatting === "whatsapp"
+            ? "whatsapp"
+            : getPasteMarkdownPlatform(pastedText);
+        const parsedContent = parseMarkdownToRichText(pastedText, pasteFormatting);
         const isEditorEmpty = !currentEditor.getText().trim();
 
         isApplyingSanitizedContent.current = true;
@@ -101,19 +136,25 @@ function RichCaptionEditor({
         }
         isApplyingSanitizedContent.current = false;
 
-        const nextEditorContent = currentEditor.getJSON();
+        const nextEditorContent = sanitizeContentForPlatform(currentEditor.getJSON(), formatting);
+        if (JSON.stringify(nextEditorContent) !== JSON.stringify(currentEditor.getJSON())) {
+            isApplyingSanitizedContent.current = true;
+            currentEditor.commands.setContent(nextEditorContent);
+            isApplyingSanitizedContent.current = false;
+        }
+
         syncEditorContent(currentEditor, nextEditorContent);
         setFormattingNotices([{
             type: "info",
             message: "Markdown paste was converted into editable formatting.",
         }]);
-    }, [syncEditorContent]);
+    }, [formatting, syncEditorContent]);
 
     const editor = useEditor({
         extensions: [
             StarterKit,
-            Underline,
-            Spoiler,
+            ...(formatting === "whatsapp" ? [] : [Underline]),
+            ...(formatting === "telegram" ? [Spoiler] : []),
             Link.configure({
                 openOnClick: false,
                 autolink: true,
@@ -127,6 +168,7 @@ function RichCaptionEditor({
         },
         onCreate: ({ editor: currentEditor }) => {
             editorRef.current = currentEditor;
+            sanitizeCurrentEditorContent(currentEditor);
         },
         onDestroy: () => {
             editorRef.current = null;
@@ -208,7 +250,7 @@ function RichCaptionEditor({
                 </div>
             ) : null}
             <div className="overflow-hidden rounded-[10px] border bg-white shadow-xs focus-within:ring-[3px] focus-within:ring-ring/50">
-                {editor && <EditorToolbar editor={editor} />}
+                {editor && <EditorToolbar editor={editor} formatting={formatting} />}
                 <EditorContent editor={editor} />
             </div>
             {formattingNotices.length > 0 ? (

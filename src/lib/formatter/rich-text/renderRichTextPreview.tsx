@@ -44,7 +44,7 @@ function Spoiler({ children }: { children: ReactNode }) {
     );
 }
 
-function CodeBlock({ code, language }: { code: string; language?: string }) {
+function TelegramCodeBlock({ code, language }: { code: string; language?: string }) {
     const [copied, setCopied] = useState(false);
     const languageLabel = (language ?? "code").toLowerCase();
 
@@ -130,6 +130,16 @@ function CodeBlock({ code, language }: { code: string; language?: string }) {
     );
 }
 
+function WhatsAppCodeBlock({ code }: { code: string }) {
+    return (
+        <div className="my-1 max-w-full">
+            <pre className="m-0 max-w-full overflow-x-auto whitespace-pre text-left font-mono text-[13px] leading-6 tracking-[0.01em] text-[#1f2937]">
+                <code>{code}</code>
+            </pre>
+        </div>
+    );
+}
+
 function renderMarkedText(text: string, marks: JSONContent["marks"], key: string): ReactNode {
     if (!marks?.length) {
         return <span key={key}>{text}</span>;
@@ -180,11 +190,11 @@ function renderMarkedText(text: string, marks: JSONContent["marks"], key: string
     }, <span key={key}>{text}</span>);
 }
 
-function renderInlineContent(node: JSONContent, keyPrefix: string): ReactNode[] {
-    return (node.content ?? []).map((childNode, index) => renderNode(childNode, `${keyPrefix}-${index}`));
+function renderInlineContent(node: JSONContent, keyPrefix: string, formatting: PlatformFormatting): ReactNode[] {
+    return (node.content ?? []).map((childNode, index) => renderNode(childNode, `${keyPrefix}-${index}`, formatting));
 }
 
-function renderNode(node: JSONContent, key: string): ReactNode {
+function renderNode(node: JSONContent, key: string, formatting: PlatformFormatting): ReactNode {
     if (node.type === "text") {
         return renderMarkedText(node.text ?? "", node.marks, key);
     }
@@ -196,7 +206,7 @@ function renderNode(node: JSONContent, key: string): ReactNode {
     if (node.type === "paragraph") {
         return (
             <div key={key} className="min-h-5 leading-5">
-                {renderInlineContent(node, key)}
+                {renderInlineContent(node, key, formatting)}
             </div>
         );
     }
@@ -204,7 +214,7 @@ function renderNode(node: JSONContent, key: string): ReactNode {
     if (node.type === "bulletList") {
         return (
             <ul key={key} className="list-disc space-y-0.5 pl-5 leading-5">
-                {(node.content ?? []).map((childNode, index) => renderNode(childNode, `${key}-li-${index}`))}
+                {(node.content ?? []).map((childNode, index) => renderNode(childNode, `${key}-li-${index}`, formatting))}
             </ul>
         );
     }
@@ -212,7 +222,7 @@ function renderNode(node: JSONContent, key: string): ReactNode {
     if (node.type === "orderedList") {
         return (
             <ol key={key} className="list-decimal space-y-0.5 pl-5 leading-5">
-                {(node.content ?? []).map((childNode, index) => renderNode(childNode, `${key}-li-${index}`))}
+                {(node.content ?? []).map((childNode, index) => renderNode(childNode, `${key}-li-${index}`, formatting))}
             </ol>
         );
     }
@@ -220,7 +230,7 @@ function renderNode(node: JSONContent, key: string): ReactNode {
     if (node.type === "listItem") {
         return (
             <li key={key}>
-                {renderInlineContent(node, key)}
+                {renderInlineContent(node, key, formatting)}
             </li>
         );
     }
@@ -228,7 +238,7 @@ function renderNode(node: JSONContent, key: string): ReactNode {
     if (node.type === "blockquote") {
         return (
             <blockquote key={key} className="border-l-4 border-zinc-300 pl-3 text-zinc-700 leading-5">
-                {(node.content ?? []).map((childNode, index) => renderNode(childNode, `${key}-quote-${index}`))}
+                {(node.content ?? []).map((childNode, index) => renderNode(childNode, `${key}-quote-${index}`, formatting))}
             </blockquote>
         );
     }
@@ -239,13 +249,15 @@ function renderNode(node: JSONContent, key: string): ReactNode {
 
         return (
             <div key={key} className="py-1">
-                <CodeBlock code={codeText} language={language} />
+                {formatting === "telegram"
+                    ? <TelegramCodeBlock code={codeText} language={language} />
+                    : <WhatsAppCodeBlock code={codeText} />}
             </div>
         );
     }
     
     // Fallback for unhandled node types: render their inline content
-    return <span key={key}>{renderInlineContent(node, key)}</span>;
+    return <span key={key}>{renderInlineContent(node, key, formatting)}</span>;
 }
 
 export function renderRichTextContentPreview(content: JSONContent, formatting: PlatformFormatting) {
@@ -253,7 +265,7 @@ export function renderRichTextContentPreview(content: JSONContent, formatting: P
 
     return (
         <div className="space-y-1.5">
-            {nodes.map((node, index) => renderNode(node, `${formatting}-preview-${index}`))}
+            {nodes.map((node, index) => renderNode(node, `${formatting}-preview-${index}`, formatting))}
         </div>
     );
 }

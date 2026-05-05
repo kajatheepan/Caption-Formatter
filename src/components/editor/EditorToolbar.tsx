@@ -15,6 +15,7 @@ import {
     type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { PlatformFormatting } from "@/lib/formatter/rich-text/formattingPolicy";
 
 type ToolbarButtonProps = {
     label: string;
@@ -48,11 +49,13 @@ function ToolbarButton({ label, icon: Icon, isActive = false, disabled = false, 
 
 type EditorToolbarProps = {
     editor: Editor;
+    formatting?: PlatformFormatting;
 };
 
-function EditorToolbar({ editor }: EditorToolbarProps) {
+function EditorToolbar({ editor, formatting = "telegram" }: EditorToolbarProps) {
     const [, setRenderKey] = useState(0);
     const isCodeBlockActive = editor.isActive("codeBlock");
+    const isWhatsApp = formatting === "whatsapp";
 
     useEffect(() => {
         const rerenderToolbar = () => {
@@ -95,13 +98,15 @@ function EditorToolbar({ editor }: EditorToolbarProps) {
                 disabled={isCodeBlockActive}
                 onClick={() => editor.chain().focus().toggleStrike().run()}
             />
-            <ToolbarButton
-                label="Underline"
-                icon={Underline}
-                isActive={editor.isActive("underline")}
-                disabled={isCodeBlockActive}
-                onClick={() => editor.chain().focus().toggleUnderline().run()}
-            />
+            {isWhatsApp ? null : (
+                <ToolbarButton
+                    label="Underline"
+                    icon={Underline}
+                    isActive={editor.isActive("underline")}
+                    disabled={isCodeBlockActive}
+                    onClick={() => editor.chain().focus().toggleUnderline().run()}
+                />
+            )}
             <ToolbarButton
                 label="Numbered list"
                 icon={ListOrdered}
@@ -133,13 +138,15 @@ function EditorToolbar({ editor }: EditorToolbarProps) {
                 isActive={editor.isActive("codeBlock")}
                 onClick={() => editor.chain().focus().toggleCodeBlock().run()}
             />
-            <ToolbarButton
-                label="Telegram spoiler"
-                icon={ScanEye}
-                isActive={editor.isActive("spoiler")}
-                disabled={isCodeBlockActive}
-                onClick={() => editor.chain().focus().toggleMark("spoiler").run()}
-            />
+            {isWhatsApp ? null : (
+                <ToolbarButton
+                    label="Telegram spoiler"
+                    icon={ScanEye}
+                    isActive={editor.isActive("spoiler")}
+                    disabled={isCodeBlockActive}
+                    onClick={() => editor.chain().focus().toggleMark("spoiler").run()}
+                />
+            )}
             <ToolbarButton
                 label="Clear formatting"
                 icon={RemoveFormatting}

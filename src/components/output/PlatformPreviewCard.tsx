@@ -159,6 +159,7 @@ function PlatformPreviewCard({
                                         setIsEditing(false);
                                     }}
                                     showHeader={false}
+                                    formatting={platformFormatting}
                                 />
                             </div>
                             <div className="rounded-[10px] border bg-[#f7f7f8] p-3">
