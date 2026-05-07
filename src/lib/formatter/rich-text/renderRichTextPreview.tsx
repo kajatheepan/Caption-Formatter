@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import type { JSONContent } from "@tiptap/core";
 import React, { useState } from "react";
 import type { ReactNode } from "react";
@@ -55,7 +56,7 @@ function TelegramCodeBlock({ code, language }: { code: string; language?: string
                 setCopied(true);
                 setTimeout(() => setCopied(false), 1500);
             }
-        } catch (e) {
+        } catch {
             // ignore copy errors
         }
     };
@@ -67,7 +68,7 @@ function TelegramCodeBlock({ code, language }: { code: string; language?: string
         }
 
         const parts: ReactNode[] = [];
-        const tokenRegex = /([a-zA-Z_$][a-zA-Z0-9_$]*)|(\d+(?:\.\d+)?)|([(){}\[\].,;:+\-*/%<>=!&|?]+)/g;
+        const tokenRegex = /([a-zA-Z_$][a-zA-Z0-9_$]*)|(\d+(?:\.\d+)?)|([()[\]{}.,;:+\-*/%<>=!&|?]+)/g;
         const jsKeywords = new Set(["let", "const", "var", "if", "else", "for", "while", "return", "function", "true", "false", "null"]);
         let lastIndex = 0;
         let match: RegExpExecArray | null;
@@ -82,7 +83,7 @@ function TelegramCodeBlock({ code, language }: { code: string; language?: string
                 parts.push(<span key={`kw-${match.index}`} className="text-[#4BA3E3]">{token}</span>);
             } else if (/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(token)) {
                 parts.push(<span key={`id-${match.index}`} className="text-[#56A47A]">{token}</span>);
-            } else if (/^(\d+(?:\.\d+)?)$/.test(token) || /^[(){}\[\].,;:+\-*/%<>=!&|?]+$/.test(token)) {
+            } else if (/^(\d+(?:\.\d+)?)$/.test(token) || /^[()[\]{}.,;:+\-*/%<>=!&|?]+$/.test(token)) {
                 parts.push(<span key={`sym-${match.index}`} className="text-[#E56B6F]">{token}</span>);
             } else {
                 parts.push(token);

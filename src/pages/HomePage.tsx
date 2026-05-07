@@ -11,6 +11,7 @@ import useClipboard from "@/hooks/useClipboard";
 import useLocalDraft from "@/hooks/useLocalDraft";
 import useCaptionDocument from "@/hooks/useCaptionDocument";
 import type { Platform } from "@/types/platform";
+import CopyAllModal from "@/components/output/CopyAllModal";
 
 function HomePage() {
     const { draftDocument, saveDraft, clearDraft } = useLocalDraft();
@@ -45,12 +46,10 @@ function HomePage() {
         clearDraft();
     };
 
-    const handleCopyAll = () => {
-        const text = outputs
-            .map((output) => `=== ${output.label} ===\n${output.text}`)
-            .join("\n\n");
+    const [isCopyModalOpen, setIsCopyModalOpen] = useState(false);
 
-        void copyAll(text);
+    const handleCopyAll = () => {
+        setIsCopyModalOpen(true);
     };
 
     return (
@@ -61,6 +60,12 @@ function HomePage() {
             copyAllCopied={copyAllCopied}
             copyAllError={Boolean(copyAllError)}
         >
+            <CopyAllModal
+                open={isCopyModalOpen}
+                outputs={outputs}
+                onClose={() => setIsCopyModalOpen(false)}
+                copy={copyAll}
+            />
             <div className="mx-auto grid w-full max-w-[1440px] gap-6 lg:grid-cols-[minmax(560px,1.2fr)_minmax(420px,0.8fr)]">
                 <section className="flex flex-col gap-4 lg:sticky lg:top-24 lg:self-start">
                     <Card className="rounded-[14px] shadow-md shadow-black/5">

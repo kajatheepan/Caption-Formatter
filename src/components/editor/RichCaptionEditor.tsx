@@ -12,6 +12,7 @@ import {
     PLATFORM_SUPPORTED_MARKS,
     type FormattingNotice,
     type PlatformFormatting,
+    type RichTextMarkType,
 } from "@/lib/formatter/rich-text/formattingPolicy";
 
 type RichCaptionEditorProps = {
@@ -51,7 +52,7 @@ function sanitizeContentForPlatform(content: JSONContent, formatting: PlatformFo
     const sanitizeNode = (node: JSONContent): JSONContent => {
         const nextNode: JSONContent = {
             ...node,
-            marks: node.marks?.filter((mark) => supportedMarks.has(mark.type as any)),
+            marks: node.marks?.filter((mark) => supportedMarks.has(mark.type as RichTextMarkType)),
             content: node.content?.map((childNode) => sanitizeNode(childNode)),
         };
 
@@ -119,7 +120,7 @@ function RichCaptionEditor({
         }
 
         syncEditorContent(currentEditor, nextEditorContent);
-    }, [syncEditorContent]);
+    }, [formatting, syncEditorContent]);
 
     const insertMarkdownPaste = useCallback((currentEditor: Editor, pastedText: string) => {
         const pasteFormatting = formatting === "whatsapp"

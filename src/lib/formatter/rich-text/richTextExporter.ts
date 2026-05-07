@@ -86,7 +86,7 @@ function getPrimaryFormattingMark(marks: JSONContent["marks"], state: ExportStat
     return supportedTextMarks[0] ?? null;
 }
 
-function tryRenderWhatsAppCombined(text: string, supportedTextMarks: RichTextMarkType[], state: ExportState) {
+function tryRenderWhatsAppCombined(text: string, supportedTextMarks: RichTextMarkType[]) {
     const delimiterFor: Record<RichTextMarkType, string> = {
         bold: "*",
         italic: "_",
@@ -144,7 +144,7 @@ function renderTextWithMarks(text: string, marks: JSONContent["marks"], state: E
 
     // For WhatsApp, try to emit nested delimiters when safe (e.g. `_~text~_`).
     if (state.platform === "whatsapp" && supportedTextMarks.length > 1) {
-        const combined = tryRenderWhatsAppCombined(text, supportedTextMarks, state);
+        const combined = tryRenderWhatsAppCombined(text, supportedTextMarks);
         if (combined) return combined;
         // otherwise fall through and simplify with primary mark below and add notice
         addNotice(state, {
