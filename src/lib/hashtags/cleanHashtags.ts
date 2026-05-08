@@ -4,13 +4,13 @@ export function cleanHashtags(input: string | string[]) {
     const cleanedHashtags: string[] = [];
 
     for (const word of words) {
-        const trimmedWord = word.trim().replace(/^#+/, "").toLowerCase();
+        const sanitized = word.trim().replace(/^#+/, "").replace(/[^\w]/g, "").toLowerCase();
 
-        if (!trimmedWord) {
+        if (!sanitized) {
             continue;
         }
 
-        const hashtag = `#${trimmedWord}`;
+        const hashtag = `#${sanitized}`;
 
         if (seenHashtags.has(hashtag)) {
             continue;

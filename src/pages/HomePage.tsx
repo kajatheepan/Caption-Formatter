@@ -12,6 +12,7 @@ import useLocalDraft from "@/hooks/useLocalDraft";
 import useCaptionDocument from "@/hooks/useCaptionDocument";
 import type { Platform } from "@/types/platform";
 import CopyAllModal from "@/components/output/CopyAllModal";
+import { decodeDocumentFromHash } from "@/lib/sharing/shareUrl";
 
 function HomePage() {
     const { draftDocument, saveDraft, clearDraft } = useLocalDraft();
@@ -33,7 +34,17 @@ function HomePage() {
         setCustomPlatformContent,
         resetCustomPlatformText,
         resetDocument,
+        loadDocument,
     } = useCaptionDocument(draftDocument);
+
+    useEffect(() => {
+        if (window.location.hash) {
+            const sharedData = decodeDocumentFromHash(window.location.hash);
+            if (sharedData) {
+                loadDocument(sharedData);
+            }
+        }
+    }, [loadDocument]);
 
     const outputs = formatAllPlatforms(document);
 
@@ -44,6 +55,9 @@ function HomePage() {
     const handleClear = () => {
         resetDocument();
         clearDraft();
+        if (window.location.hash) {
+            history.replaceState(null, "", window.location.pathname);
+        }
     };
 
     const [isCopyModalOpen, setIsCopyModalOpen] = useState(false);
@@ -54,6 +68,7 @@ function HomePage() {
 
     return (
         <AppLayout
+            document={document}
             saveStatus="Saved locally"
             onClear={handleClear}
             onCopyAll={handleCopyAll}
@@ -67,14 +82,15 @@ function HomePage() {
                 copy={copyAll}
             />
             <div className="mx-auto grid w-full max-w-[1440px] gap-6 lg:grid-cols-[minmax(560px,1.2fr)_minmax(420px,0.8fr)]">
-                <section className="flex flex-col gap-4 lg:sticky lg:top-24 lg:self-start">
-                    <Card className="rounded-[14px] shadow-md shadow-black/5">
-                        <CardHeader className="pb-3">
-                            <CardTitle className="text-[11px] uppercase tracking-[0.12em] text-zinc-400">
-                                ✦ Caption
+                <section className="flex flex-col gap-4 lg:sticky lg:top-20 lg:self-start">
+                    <Card className="rounded-2xl border-zinc-200/80 shadow-sm transition-all hover:shadow-md">
+                        <CardHeader className="pb-3 border-b bg-zinc-50/50 rounded-t-2xl">
+                            <CardTitle className="text-xs uppercase tracking-[0.14em] text-zinc-500 font-bold flex items-center gap-1.5">
+                                <span className="size-2 rounded-full bg-primary" />
+                                Caption Editor
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-4 pt-0">
+                        <CardContent className="space-y-4 pt-4">
                             <CaptionEditor
                                 value={document.caption}
                                 editorContent={document.editorContent}
@@ -93,13 +109,14 @@ function HomePage() {
                         </CardContent>
                     </Card>
 
-                    <Card className="rounded-[14px] shadow-md shadow-black/5">
-                        <CardHeader className="pb-3">
-                            <CardTitle className="text-[11px] uppercase tracking-[0.12em] text-zinc-400">
-                                # Hashtags
+                    <Card className="rounded-2xl border-zinc-200/80 shadow-sm transition-all hover:shadow-md">
+                        <CardHeader className="pb-3 border-b bg-zinc-50/50 rounded-t-2xl">
+                            <CardTitle className="text-xs uppercase tracking-[0.14em] text-zinc-500 font-bold flex items-center gap-1.5">
+                                <span className="size-2 rounded-full bg-indigo-500" />
+                                Hashtag Manager
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="pt-0">
+                        <CardContent className="pt-4">
                             <HashtagInput
                                 hashtags={document.hashtags}
                                 onChange={setHashtags}
@@ -112,10 +129,12 @@ function HomePage() {
                     </Card>
                 </section>
 
-                <section className="flex min-w-0 w-full flex-col gap-4 lg:sticky lg:top-24 lg:self-start">
+                <section className="flex min-w-0 w-full flex-col gap-4 lg:sticky lg:top-20 lg:self-start">
                     <div className="flex items-center justify-between px-1">
-                        <h2 className="text-lg font-bold">Platform Preview</h2>
-                        <p className="text-sm text-muted-foreground">Select one platform</p>
+                        <div>
+                            <h2 className="text-lg font-extrabold tracking-tight text-zinc-900">Platform Preview</h2>
+                            <p className="text-xs text-muted-foreground">Select a platform to preview or customize format</p>
+                        </div>
                     </div>
                     <PlatformTabs
                         outputs={outputs}

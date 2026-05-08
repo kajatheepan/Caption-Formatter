@@ -76,82 +76,97 @@ function EditorToolbar({ editor, formatting = "telegram" }: EditorToolbarProps) 
     }, [editor]);
 
     return (
-        <div className="flex flex-wrap items-center justify-center gap-1 border-b bg-white px-3 py-2">
-            <ToolbarButton
-                label="Bold"
-                icon={Bold}
-                isActive={editor.isActive("bold")}
-                disabled={isCodeBlockActive}
-                onClick={() => editor.chain().focus().toggleBold().run()}
-            />
-            <ToolbarButton
-                label="Italic"
-                icon={Italic}
-                isActive={editor.isActive("italic")}
-                disabled={isCodeBlockActive}
-                onClick={() => editor.chain().focus().toggleItalic().run()}
-            />
-            <ToolbarButton
-                label="Strikethrough"
-                icon={Strikethrough}
-                isActive={editor.isActive("strike")}
-                disabled={isCodeBlockActive}
-                onClick={() => editor.chain().focus().toggleStrike().run()}
-            />
-            {isWhatsApp ? null : (
+        <div className="flex flex-wrap items-center justify-start gap-1 border-b bg-zinc-50/80 px-3 py-1.5 backdrop-blur-xs">
+            <div className="flex items-center gap-0.5">
                 <ToolbarButton
-                    label="Underline"
-                    icon={Underline}
-                    isActive={editor.isActive("underline")}
+                    label="Bold (Ctrl+B)"
+                    icon={Bold}
+                    isActive={editor.isActive("bold")}
                     disabled={isCodeBlockActive}
-                    onClick={() => editor.chain().focus().toggleUnderline().run()}
+                    onClick={() => editor.chain().focus().toggleBold().run()}
                 />
-            )}
-            <ToolbarButton
-                label="Numbered list"
-                icon={ListOrdered}
-                isActive={editor.isActive("orderedList")}
-                onClick={() => editor.chain().focus().toggleOrderedList().run()}
-            />
-            <ToolbarButton
-                label="Bullet list"
-                icon={List}
-                isActive={editor.isActive("bulletList")}
-                onClick={() => editor.chain().focus().toggleBulletList().run()}
-            />
-            <ToolbarButton
-                label="Quote"
-                icon={Quote}
-                isActive={editor.isActive("blockquote")}
-                onClick={() => editor.chain().focus().toggleBlockquote().run()}
-            />
-            <ToolbarButton
-                label="Inline code"
-                icon={Code}
-                isActive={editor.isActive("code")}
-                disabled={isCodeBlockActive}
-                onClick={() => editor.chain().focus().toggleCode().run()}
-            />
-            <ToolbarButton
-                label="Code block"
-                icon={CodeXml}
-                isActive={editor.isActive("codeBlock")}
-                onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-            />
-            {isWhatsApp ? null : (
                 <ToolbarButton
-                    label="Telegram spoiler"
-                    icon={ScanEye}
-                    isActive={editor.isActive("spoiler")}
+                    label="Italic (Ctrl+I)"
+                    icon={Italic}
+                    isActive={editor.isActive("italic")}
                     disabled={isCodeBlockActive}
-                    onClick={() => editor.chain().focus().toggleMark("spoiler").run()}
+                    onClick={() => editor.chain().focus().toggleItalic().run()}
                 />
-            )}
-            <ToolbarButton
-                label="Clear formatting"
-                icon={RemoveFormatting}
-                onClick={() => editor.chain().focus().unsetAllMarks().clearNodes().run()}
-            />
+                <ToolbarButton
+                    label="Strikethrough"
+                    icon={Strikethrough}
+                    isActive={editor.isActive("strike")}
+                    disabled={isCodeBlockActive}
+                    onClick={() => editor.chain().focus().toggleStrike().run()}
+                />
+                {isWhatsApp ? null : (
+                    <ToolbarButton
+                        label="Underline (Ctrl+U)"
+                        icon={Underline}
+                        isActive={editor.isActive("underline")}
+                        disabled={isCodeBlockActive}
+                        onClick={() => editor.chain().focus().toggleUnderline().run()}
+                    />
+                )}
+            </div>
+
+            <div className="h-4 w-px bg-zinc-200 mx-1" />
+
+            <div className="flex items-center gap-0.5">
+                <ToolbarButton
+                    label="Numbered list"
+                    icon={ListOrdered}
+                    isActive={editor.isActive("orderedList")}
+                    onClick={() => editor.chain().focus().toggleOrderedList().run()}
+                />
+                <ToolbarButton
+                    label="Bullet list"
+                    icon={List}
+                    isActive={editor.isActive("bulletList")}
+                    onClick={() => editor.chain().focus().toggleBulletList().run()}
+                />
+                <ToolbarButton
+                    label="Quote block"
+                    icon={Quote}
+                    isActive={editor.isActive("blockquote")}
+                    onClick={() => editor.chain().focus().toggleBlockquote().run()}
+                />
+            </div>
+
+            <div className="h-4 w-px bg-zinc-200 mx-1" />
+
+            <div className="flex items-center gap-0.5">
+                <ToolbarButton
+                    label="Inline code"
+                    icon={Code}
+                    isActive={editor.isActive("code")}
+                    disabled={isCodeBlockActive}
+                    onClick={() => editor.chain().focus().toggleCode().run()}
+                />
+                <ToolbarButton
+                    label="Code block"
+                    icon={CodeXml}
+                    isActive={editor.isActive("codeBlock")}
+                    onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+                />
+                {isWhatsApp ? null : (
+                    <ToolbarButton
+                        label="Telegram spoiler"
+                        icon={ScanEye}
+                        isActive={editor.isActive("spoiler")}
+                        disabled={isCodeBlockActive}
+                        onClick={() => editor.chain().focus().toggleMark("spoiler").run()}
+                    />
+                )}
+            </div>
+
+            <div className="ml-auto flex items-center">
+                <ToolbarButton
+                    label="Clear formatting"
+                    icon={RemoveFormatting}
+                    onClick={() => editor.chain().focus().unsetAllMarks().clearNodes().run()}
+                />
+            </div>
         </div>
     );
 }

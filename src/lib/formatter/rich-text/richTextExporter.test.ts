@@ -29,7 +29,7 @@ describe("exportRichTextForPlatform", () => {
     it("exports Telegram chat-safe markdown and flattens unsupported marks", () => {
         const result = exportRichTextForPlatform(richDoc, "telegram");
 
-        expect(result.text).toBe("**Bold** Under Site (https://example.com?a=1))");
+        expect(result.text).toBe("**Bold** Under [Site](https://example.com?a=1))");
         expect(result.notices).toContainEqual({
             type: "info",
             message: "Telegram chat paste supports bold, italic, strike, and inline code. Underline uses rich clipboard when supported; otherwise it becomes readable text.",

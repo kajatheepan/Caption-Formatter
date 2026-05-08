@@ -1,8 +1,10 @@
 import type { ReactNode } from "react";
 import TopBar from "./TopBar";
+import type { CaptionDocument } from "@/types/caption";
 
 type AppLayoutProps = {
     children: ReactNode;
+    document?: CaptionDocument;
     saveStatus?: string;
     onClear?: () => void;
     onCopyAll?: () => void;
@@ -12,6 +14,7 @@ type AppLayoutProps = {
 
 function AppLayout({
     children,
+    document,
     saveStatus = "Saved locally",
     onClear = () => undefined,
     onCopyAll = () => undefined,
@@ -21,6 +24,7 @@ function AppLayout({
     return (
         <div className="flex min-h-dvh w-full flex-col bg-[#f7f7f8]">
             <TopBar
+                document={document}
                 saveStatus={saveStatus}
                 onClear={onClear}
                 onCopyAll={onCopyAll}

@@ -203,7 +203,7 @@ function renderTextWithMarks(text: string, marks: JSONContent["marks"], state: E
     if (state.platform === "telegram") {
         const linkMark = marks.find((mark) => mark.type === "link" && typeof mark.attrs?.href === "string");
         if (linkMark && typeof linkMark.attrs?.href === "string" && linkMark.attrs.href !== text) {
-            return `${rendered} (${linkMark.attrs.href})`;
+            return `[${rendered}](${linkMark.attrs.href})`;
         }
     }
 
