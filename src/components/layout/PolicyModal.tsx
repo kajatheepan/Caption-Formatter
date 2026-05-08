@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ShieldCheck, FileText, X } from "lucide-react";
+import { useModalA11y } from "@/hooks/useModalA11y";
 
 type PolicyModalProps = {
     type: "privacy" | "terms" | null;
@@ -7,6 +8,8 @@ type PolicyModalProps = {
 };
 
 export default function PolicyModal({ type, onClose }: PolicyModalProps) {
+    const dialogRef = useModalA11y(type !== null, onClose);
+
     if (!type) return null;
 
     const isPrivacy = type === "privacy";
@@ -20,7 +23,9 @@ export default function PolicyModal({ type, onClose }: PolicyModalProps) {
             role="presentation"
         >
             <div
-                className="flex max-h-[85dvh] w-full max-w-lg flex-col rounded-2xl border bg-white p-6 shadow-2xl"
+                ref={dialogRef}
+                tabIndex={-1}
+                className="flex max-h-[85dvh] w-full max-w-lg flex-col rounded-2xl border bg-white p-6 shadow-2xl outline-none"
                 onMouseDown={(event) => event.stopPropagation()}
                 role="dialog"
                 aria-modal="true"

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { EditorContent, useEditor, type Editor, type JSONContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
@@ -94,6 +94,7 @@ function RichCaptionEditor({
     const [formattingNotices, setFormattingNotices] = useState<FormattingNotice[]>([]);
     const isApplyingSanitizedContent = useRef(false);
     const editorRef = useRef<Editor | null>(null);
+    const headingId = useId();
 
     const syncEditorContent = useCallback((
         currentEditor: NonNullable<ReturnType<typeof useEditor>>,
@@ -165,6 +166,11 @@ function RichCaptionEditor({
         editorProps: {
             attributes: {
                 class: "rich-caption-editor min-h-32 px-4 py-3 text-sm leading-6 outline-none",
+                role: "textbox",
+                "aria-multiline": "true",
+                ...(showHeader
+                    ? { "aria-labelledby": headingId }
+                    : { "aria-label": heading }),
             },
         },
         onCreate: ({ editor: currentEditor }) => {
@@ -236,7 +242,7 @@ function RichCaptionEditor({
             {showHeader ? (
                 <div className="flex items-center justify-between gap-3">
                     <div className="space-y-1">
-                        <h3 className="text-[13px] font-medium text-zinc-700">{heading}</h3>
+                        <h3 id={headingId} className="text-[13px] font-medium text-zinc-700">{heading}</h3>
                         {description ? <p className="text-[11px] text-muted-foreground">{description}</p> : null}
                     </div>
                     {value.trim() && onClear && (

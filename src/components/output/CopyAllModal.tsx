@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { FormattedOutput } from "@/lib/formatter/types";
+import { useModalA11y } from "@/hooks/useModalA11y";
 
 type CopyAllModalProps = {
     open: boolean;
@@ -15,6 +16,7 @@ export default function CopyAllModal({ open, outputs, onClose, copy }: CopyAllMo
     const [copiedMap, setCopiedMap] = useState<Record<string, boolean>>({});
     const [globalCopied, setGlobalCopied] = useState(false);
     const [expandedPlatform, setExpandedPlatform] = useState<string | null>(firstPlatform);
+    const dialogRef = useModalA11y(open, onClose);
 
     useEffect(() => {
         if (open) {
@@ -48,7 +50,9 @@ export default function CopyAllModal({ open, outputs, onClose, copy }: CopyAllMo
             role="presentation"
         >
             <div
-                className="flex max-h-[90dvh] w-full max-w-3xl flex-col rounded-xl border bg-white p-5 shadow-xl"
+                ref={dialogRef}
+                tabIndex={-1}
+                className="flex max-h-[90dvh] w-full max-w-3xl flex-col rounded-xl border bg-white p-5 shadow-xl outline-none"
                 onMouseDown={(event) => event.stopPropagation()}
                 role="dialog"
                 aria-modal="true"

@@ -3,6 +3,7 @@ import { CopyCheck, Copy, Share2, Sparkles, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { APP_NAME } from "@/lib/constants";
 import ShareModal from "@/components/sharing/ShareModal";
+import { useModalA11y } from "@/hooks/useModalA11y";
 import type { CaptionDocument } from "@/types/caption";
 
 type TopBarProps = {
@@ -24,6 +25,7 @@ function TopBar({
 }: TopBarProps) {
     const [isClearDialogOpen, setIsClearDialogOpen] = useState(false);
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+    const clearDialogRef = useModalA11y(isClearDialogOpen, () => setIsClearDialogOpen(false));
 
     return (
         <header className="sticky top-0 z-20 w-full border-b bg-white/90 backdrop-blur-md px-5 py-2.5 transition-all">
@@ -101,9 +103,21 @@ function TopBar({
             ) : null}
 
             {isClearDialogOpen && (
-                <div className="fixed inset-0 z-50 grid place-items-center bg-black/40 backdrop-blur-xs px-4">
-                    <div className="w-full max-w-sm rounded-2xl border bg-white p-5 shadow-2xl">
-                        <h2 className="text-base font-bold text-zinc-950">Clear draft?</h2>
+                <div
+                    className="fixed inset-0 z-50 grid place-items-center bg-black/40 backdrop-blur-xs px-4"
+                    onMouseDown={() => setIsClearDialogOpen(false)}
+                    role="presentation"
+                >
+                    <div
+                        ref={clearDialogRef}
+                        tabIndex={-1}
+                        className="w-full max-w-sm rounded-2xl border bg-white p-5 shadow-2xl outline-none"
+                        onMouseDown={(event) => event.stopPropagation()}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="clear-dialog-title"
+                    >
+                        <h2 id="clear-dialog-title" className="text-base font-bold text-zinc-950">Clear draft?</h2>
                         <p className="mt-2 text-xs leading-5 text-muted-foreground">
                             This will remove your caption, footer, hashtags, settings, and custom platform edits from this browser.
                         </p>

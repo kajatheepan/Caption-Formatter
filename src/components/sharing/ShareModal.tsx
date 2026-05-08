@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { CaptionDocument } from "@/types/caption";
 import { getShareableUrl } from "@/lib/sharing/shareUrl";
+import { useModalA11y } from "@/hooks/useModalA11y";
 
 type ShareModalProps = {
     open: boolean;
@@ -13,6 +14,7 @@ type ShareModalProps = {
 
 export default function ShareModal({ open, document, onClose }: ShareModalProps) {
     const [copied, setCopied] = useState(false);
+    const dialogRef = useModalA11y(open, onClose);
 
     if (!open) return null;
 
@@ -35,7 +37,9 @@ export default function ShareModal({ open, document, onClose }: ShareModalProps)
             role="presentation"
         >
             <div
-                className="w-full max-w-md rounded-2xl border bg-white p-6 shadow-2xl transition-all"
+                ref={dialogRef}
+                tabIndex={-1}
+                className="w-full max-w-md rounded-2xl border bg-white p-6 shadow-2xl transition-all outline-none"
                 onMouseDown={(event) => event.stopPropagation()}
                 role="dialog"
                 aria-modal="true"

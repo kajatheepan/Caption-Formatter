@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://captionforge.kajatheepan.dev/sitemap.xml

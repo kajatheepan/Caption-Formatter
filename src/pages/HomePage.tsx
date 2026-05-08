@@ -85,7 +85,7 @@ function HomePage() {
                 <section className="flex flex-col gap-4 lg:sticky lg:top-20 lg:self-start">
                     <Card className="rounded-2xl border-zinc-200/80 shadow-sm transition-all hover:shadow-md">
                         <CardHeader className="pb-3 border-b bg-zinc-50/50 rounded-t-2xl">
-                            <CardTitle className="text-xs uppercase tracking-[0.14em] text-zinc-500 font-bold flex items-center gap-1.5">
+                            <CardTitle as="h2" className="text-xs uppercase tracking-[0.14em] text-zinc-500 font-bold flex items-center gap-1.5">
                                 <span className="size-2 rounded-full bg-primary" />
                                 Caption Editor
                             </CardTitle>
@@ -111,7 +111,7 @@ function HomePage() {
 
                     <Card className="rounded-2xl border-zinc-200/80 shadow-sm transition-all hover:shadow-md">
                         <CardHeader className="pb-3 border-b bg-zinc-50/50 rounded-t-2xl">
-                            <CardTitle className="text-xs uppercase tracking-[0.14em] text-zinc-500 font-bold flex items-center gap-1.5">
+                            <CardTitle as="h2" className="text-xs uppercase tracking-[0.14em] text-zinc-500 font-bold flex items-center gap-1.5">
                                 <span className="size-2 rounded-full bg-indigo-500" />
                                 Hashtag Manager
                             </CardTitle>

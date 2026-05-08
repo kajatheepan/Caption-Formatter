@@ -45,6 +45,7 @@ function HashtagInput({
         <div className="space-y-4">
             <div className="flex gap-2">
                 <Input
+                    aria-label="Add hashtag"
                     value={value}
                     onChange={(event) => setValue(event.target.value)}
                     onKeyDown={handleKeyDown}
@@ -63,6 +64,7 @@ function HashtagInput({
                             key={hashtag}
                             type="button"
                             onClick={() => removeHashtag(hashtag)}
+                            aria-label={`Remove hashtag ${hashtag}`}
                             className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary"
                         >
                             {hashtag}
